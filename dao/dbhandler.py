@@ -61,3 +61,16 @@ class DBHandler(metaclass=Singleton):
                 res = cursor.fetchone()["poste"]
 
         return res
+
+    @classmethod
+    def display_database(cls):
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "select * from projet_info.utilisateur u"
+                )
+
+                res = cursor.fetchall()
+        
+        for elt in res:
+            print(f'{elt["pseudo"]} - {elt["poste"]}')

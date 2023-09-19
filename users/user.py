@@ -1,5 +1,4 @@
 from users.userbase import UserBase
-from inputhandler.inputhandler import InputHandler
 
 
 class User(UserBase):
@@ -20,19 +19,9 @@ class User(UserBase):
         
     def actions(self):
         self.display_actions()
-        poste = self.get_integer_input("Entrez le poste souhaité à analyser: ")
+        poste = self.get_integer_input("Entrez le poste souhaité à analyser: ", 1, 5)
         poste_name = self.actions_dict.get(str(poste), "Poste inconnu")
 
         print(f"Analyse en cours pour le poste: {poste_name}")
 
-    def get_integer_input(self, prompt="Entrez un nombre entre 1 et 5: "):
-        while True:
-            user_input = InputHandler.get_input(prompt)
-            try:
-                value = int(user_input)
-                if 1 <= value <= 5:
-                    return value
-                else:
-                    print("Veuillez entrer un nombre entre 1 et 5.")
-            except ValueError:
-                print("Veuillez entrer un entier valide.")
+
