@@ -1,49 +1,58 @@
-import os
-from dbconnection import DBConnection
+from inputhandler.inputhandler import InputHandler
+from dao.dbhandler import DBHandler
+from users.user import User
+from users.admin import Admin
 
 
 class App:
-
+    
     def __init__(self):
-        self.run()
-
-    def run(self):
-        pseudo = self.ask_for_pseudo()
-        if self.check_if_pseudo_in_ddb(pseudo):
-            password = self.ask_for_password()
-            if self.check_if_password_is_correct(pseudo, password):
-                pass
-        else:
-            pass
+        self.handler = InputHandler()
+        self.pseudo = None
+        self.password = None
+        self.poste = None
 
     def ask_for_pseudo(self):
-        return input("Pseudo : ")
+        self.handler.clear_screen()
+        self.pseudo = self.handler.get_input("Pseudo : ")
+
+        if DBHandler.is_user_in_db(self.pseudo):
+            self.ask_for_password()
+        else:
+            print("Pseudo non trouvé. Veuillez créer un compte.")
+            self.create_new_account()
 
     def ask_for_password(self):
-        return input("Password : ")
+        self.handler.clear_screen()
+        self.password = self.handler.get_input("Password : ")
 
-    def check_if_pseudo_in_ddb(self, pseudo):
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "select * from projet_info.utilisateur u "
-                    f"where u.pseudo = '{pseudo}'"
-                )
-                res = cursor.fetchone()
-        if res:
-            return True
+        while not DBHandler.is_password_correct(self.pseudo, self.password):
+            print("Mot de passe incorrect. Veuillez réessayer.")
+            self.password = self.handler.get_input("Password : ")
+
+        self.handle_user_actions()
+
+    def create_new_account(self):
+        self.handler.clear_screen()
+        self.password = self.handler.get_input("Entrez un nouveau mot de passe pour créer un compte : ")
+        if DBHandler.create_user(self.pseudo, self.password):
+            print("Compte créé avec succès!")
+            self.handle_user_actions()
         else:
-            return False
+            self.create_new_account()
 
-    def check_if_password_is_correct(self, pseudo, password):
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "select * from projet_info.utilisateur u "
-                    f"where u.pseudo = '{pseudo}'"
-                )
-                res = cursor.fetchone()["mdp"]
-        return res == password
+    def handle_user_actions(self):
+        self.handler.clear_screen()
+        role = DBHandler.get_user_role(self.pseudo)
+
+        instance = Admin(self.pseudo) if role == "admin" else User(self.pseudo)
+        instance.actions()
+
+    def run(self):
+        self.handler.clear_screen()
+        self.ask_for_pseudo()
+
 
 if __name__ == "__main__":
-    App()
+    app = App()
+    app.run()
