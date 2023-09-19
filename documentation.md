@@ -128,3 +128,26 @@ $\frac{goldEarned}{gameDuration}\times 60$
 ### Variables à conserver
 
 - wardsKilled
+- wardsPlaced
+
+### Formules
+
+#### taux de participation aux tueries
+
+$\frac{kills+assists}{teamKills}\times 100$
+
+#### vision score par minute
+
+$\frac{visioScore}{gameDuration}\times 60$
+
+####  ratio de rentabilité
+
+$\frac{kills+assists}{deaths}$
+
+#### ward destruction par minute
+
+$\frac{wardsKilled}{gameDuration}\times 60$
+
+#### ward placed par minute
+
+$\frac{wardsPlaced}{gameDuration}\times 60$
