@@ -5,12 +5,12 @@
 - kills
 - assists
 - deaths
-- teamKills
+- teamKills [X]
 - totalMinionsKilled
 - gameDuration
 - visionScore
 - neutralMinionsKilled
-- totalNeutralMinions
+- totalNeutralMinions [X]
 
 ### Formules
 
@@ -38,10 +38,10 @@ $\frac{neutralMinionsKilled}{totalNeutralMinions}$
 
 ### Variables à conserver
 
-- objectiveKills
-- totalObjectiveKills
-- epicMonstersKilled
-- epicMonstersSpawned
+- objectiveKills [X]
+- totalObjectiveKills [X]
+- epicMonstersKilled [X]
+- epicMonstersSpawned [X]
 
 ### Formules
 
