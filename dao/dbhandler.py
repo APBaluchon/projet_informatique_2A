@@ -1,6 +1,8 @@
 from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
 from inputhandler.inputhandler import InputHandler
+from dao.dbgameshandler import DBGamesHandler
+import requests
 
 
 class DBHandler(metaclass=Singleton):
@@ -22,11 +24,12 @@ class DBHandler(metaclass=Singleton):
 
     @classmethod
     def create_user(cls, pseudo, password):
+        puuid_player = DBHandler.get_puuid(pseudo)
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        f"insert into projet_info.utilisateur values ('{pseudo}','{password}', 'user')"
+                        f"insert into projet_info.utilisateur values ('{pseudo}','{password}', 'user', '{puuid_player}')"
                     )
                 connection.commit()
             return True
@@ -132,3 +135,14 @@ class DBHandler(metaclass=Singleton):
                     "delete from projet_info.utilisateur u "
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
+
+
+    @classmethod
+    def get_puuid(cls, pseudo):
+        url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
+        response = requests.get(url, params=DBGamesHandler.params)
+
+        if response.status_code == 200:
+            return response.json()["puuid"]
+        else:
+            False

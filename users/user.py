@@ -1,15 +1,14 @@
 from users.userbase import UserBase
 from inputhandler.inputhandler import InputHandler
+from dao.dbgameshandler import DBGamesHandler
 
 class User(UserBase):
 
     def __init__(self, pseudo):
         self.actions_dict = {
-            "1": "Toplane",
-            "2": "Jungler",
-            "3": "Mid",
-            "4": "Adc",
-            "5": "Support"
+            "1" : "Mettre à jour la base de données",
+            "2" : "Analyser un poste",
+            "3" : "Quitter l'application"
         }
         self.pseudo = pseudo
 
@@ -19,9 +18,12 @@ class User(UserBase):
         
     def actions(self):
         self.display_actions()
-        poste = InputHandler.get_integer_input("Entrez le poste souhaité à analyser: ", 1, 5)
-        poste_name = self.actions_dict.get(str(poste), "Poste inconnu")
+        action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 3)
+        InputHandler.clear_screen()
 
-        print(f"Analyse en cours pour le poste: {poste_name}")
+        if action == 1:
+            DBGamesHandler.update_database(self.pseudo)
+
+        self.actions()
 
 

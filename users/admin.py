@@ -22,7 +22,6 @@ class Admin(UserBase):
         InputHandler.clear_screen()
         self.display_actions()
         action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 4)
-        action_name = self.actions_dict.get(str(action), "Action inconnue")
         InputHandler.clear_screen()
 
         if action == 1:
