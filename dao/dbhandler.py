@@ -1,5 +1,6 @@
 from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
+from inputhandler.inputhandler import InputHandler
 
 
 class DBHandler(metaclass=Singleton):
@@ -74,3 +75,60 @@ class DBHandler(metaclass=Singleton):
         
         for elt in res:
             print(f'{elt["pseudo"]} - {elt["poste"]}')
+
+        InputHandler.get_input("Appuyer sur une touche pour revenir au menu : ")
+
+    @classmethod
+    def update_database(cls):
+        pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+
+        while not DBHandler.is_user_in_db(pseudo_compte):
+            print("Le pseudo n'est pas dans la base de données.")
+            pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+        
+        info_to_update = InputHandler.get_integer_input("1 - Modifier le mdp \n2 - Modifier le rôle\nChoix : ", 1, 2)
+        if info_to_update == 1:
+            DBHandler.update_password(pseudo_compte)
+        elif info_to_update == 2:
+            DBHandler.update_role(pseudo_compte)
+
+    @classmethod
+    def update_password(cls, pseudo_compte):
+        new_password = InputHandler.get_input("Entrer le nouveau mot de passe du compte : ")
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "update projet_info.utilisateur u "
+                    f"set mdp = '{new_password}' "
+                    f"where u.pseudo = '{pseudo_compte}'"
+                )
+
+    @classmethod
+    def update_role(cls, pseudo_compte):
+        role_dict = {
+            "admin" : "user",
+            "user" : "admin"
+        }
+        role_actuel = DBHandler.get_user_role(pseudo_compte)
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "update projet_info.utilisateur u "
+                    f"set poste = '{role_dict[role_actuel]}' "
+                    f"where u.pseudo = '{pseudo_compte}'"
+                )
+
+    @classmethod 
+    def delete_account_from_database(cls):
+        pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+
+        while not DBHandler.is_user_in_db(pseudo_compte):
+            print("Le pseudo n'est pas dans la base de données.")
+            pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "delete from projet_info.utilisateur u "
+                    f"where u.pseudo = '{pseudo_compte}'"
+                )

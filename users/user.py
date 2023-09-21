@@ -1,5 +1,5 @@
 from users.userbase import UserBase
-
+from inputhandler.inputhandler import InputHandler
 
 class User(UserBase):
 
@@ -19,7 +19,7 @@ class User(UserBase):
         
     def actions(self):
         self.display_actions()
-        poste = self.get_integer_input("Entrez le poste souhaité à analyser: ", 1, 5)
+        poste = InputHandler.get_integer_input("Entrez le poste souhaité à analyser: ", 1, 5)
         poste_name = self.actions_dict.get(str(poste), "Poste inconnu")
 
         print(f"Analyse en cours pour le poste: {poste_name}")

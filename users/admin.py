@@ -9,7 +9,8 @@ class Admin(UserBase):
         self.actions_dict = {
             "1": "Consulter la base de données",
             "2": "Modifier les informations d'un utilisateur de la base de données",
-            "3": "Supprimer un utilisateur de la base de données"
+            "3": "Supprimer un utilisateur de la base de données",
+            "4": "Quitter l'application"
         }
         self.pseudo = pseudo
 
@@ -18,11 +19,18 @@ class Admin(UserBase):
             print(f"{key} - {value}")
         
     def actions(self):
+        InputHandler.clear_screen()
         self.display_actions()
-        action = self.get_integer_input("Entrez l'action à réaliser': ", 1, 3)
+        action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 4)
         action_name = self.actions_dict.get(str(action), "Action inconnue")
         InputHandler.clear_screen()
 
         if action == 1:
             DBHandler.display_database()
-        print("Appuyez sur une touche pour revenir au menu.")
+        elif action == 2:
+            DBHandler.update_database()
+        elif action == 3:
+            DBHandler.delete_account_from_database()
+        elif action == 4:
+            quit()
+        self.actions()
