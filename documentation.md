@@ -38,10 +38,9 @@ $\frac{neutralMinionsKilled}{totalNeutralMinions}$
 
 ### Variables à conserver
 
-- objectiveKills [X]
-- totalObjectiveKills [X]
 - epicMonstersKilled [X]
-- epicMonstersSpawned [X]
+- totalEpicMonstersKilled [X]
+- teamNeutralMinionsKilled [X]
 
 ### Formules
 
@@ -55,15 +54,15 @@ $\frac{neutralMinionsKilled}{gameDuration}\times 60$
 
 #### vision score par minute
 
-$\frac{visioScore}{gameDuration}\times 60$
-
-#### taux de contrôle objectif
-
-$\frac{objectiveKills}{totalObjectiveKills}$
+$\frac{visionScore}{gameDuration}\times 60$
 
 #### ratio de sécurisation d'objectif
 
 $\frac{epicMonstersKilled}{epicMonstersSpawned}\times 100$
+
+#### taux de participation aux objectifs neutres
+
+$\frac{neutralMinionsKilled}{teamNeutralMinionsKilled}$
 
 
 ## Mid

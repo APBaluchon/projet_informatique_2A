@@ -5,14 +5,13 @@ from inputhandler.inputhandler import InputHandler
 
 class Admin(UserBase):
 
-    def __init__(self, pseudo):
+    def __init__(self):
         self.actions_dict = {
             "1": "Consulter la base de données",
             "2": "Modifier les informations d'un utilisateur de la base de données",
             "3": "Supprimer un utilisateur de la base de données",
             "4": "Quitter l'application"
         }
-        self.pseudo = pseudo
 
     def display_actions(self):
         for key, value in self.actions_dict.items():

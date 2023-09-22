@@ -4,13 +4,11 @@ from dao.dbgameshandler import DBGamesHandler
 
 class User(UserBase):
 
-    def __init__(self, pseudo):
+    def __init__(self):
         self.actions_dict = {
-            "1" : "Mettre à jour la base de données",
-            "2" : "Analyser un poste",
-            "3" : "Quitter l'application"
+            "1" : "Analyser un poste",
+            "2" : "Quitter l'application"
         }
-        self.pseudo = pseudo
 
     def display_actions(self):
         for key, value in self.actions_dict.items():
@@ -18,12 +16,11 @@ class User(UserBase):
         
     def actions(self):
         self.display_actions()
-        action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 3)
+        action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 2)
         InputHandler.clear_screen()
 
         if action == 1:
-            DBGamesHandler.update_database(self.pseudo)
+            DBGamesHandler.generate_graph()
 
         self.actions()
-
 

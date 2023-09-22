@@ -45,7 +45,7 @@ class App:
         self.handler.clear_screen()
         role = DBHandler.get_user_role(self.pseudo)
 
-        instance = Admin(self.pseudo) if role == "admin" else User(self.pseudo)
+        instance = Admin() if role == "admin" else User()
         instance.actions()
 
     def run(self):
