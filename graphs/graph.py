@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 
 
-class Graphe(ABC):
+class Graph(ABC):
 
     def __init__(self, pseudo):
+        self.pseudo = pseudo
+        self.indicators_dict = dict()
         self.calculate_indicators()
         self.display_graph()
 

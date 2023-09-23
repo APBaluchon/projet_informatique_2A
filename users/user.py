@@ -1,6 +1,7 @@
 from users.userbase import UserBase
 from inputhandler.inputhandler import InputHandler
 from dao.dbgameshandler import DBGamesHandler
+from graphs.topgraph import TopGraph
 
 
 class User(UserBase):
@@ -43,4 +44,4 @@ class User(UserBase):
         self.display_actions(self.postes_dict)
         poste = InputHandler.get_integer_input("Entrez le poste à analyser : ", 1, 5)
         if poste==1:
-            pass
+            TopGraph(pseudo_to_analyze)

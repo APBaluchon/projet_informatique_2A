@@ -59,6 +59,19 @@ class DBGamesHandler(metaclass=Singleton):
                 res = cursor.fetchone()["count"]
         return res == 1
 
+    @classmethod
+    def get_games_for_one_position(cls, puuid, poste):
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                query = """
+                    SELECT *
+                    FROM projet_info.games g
+                    WHERE g.puuid = %s AND g.poste = %s
+                """
+                cursor.execute(query, (puuid, poste))
+                res = cursor.fetchall()
+        return res    
+
 
     @classmethod
     def add_game_information_to_database(cls, puuid, matchid):
