@@ -31,4 +31,4 @@ class Admin(UserBase):
             DBHandler.delete_account_from_database()
         elif action == 4:
             quit()
-        self.actions()
+        return self.actions()

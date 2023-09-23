@@ -2,7 +2,6 @@ from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
 from inputhandler.inputhandler import InputHandler
 from dao.dbgameshandler import DBGamesHandler
-import requests
 
 
 class DBHandler(metaclass=Singleton):
@@ -24,12 +23,11 @@ class DBHandler(metaclass=Singleton):
 
     @classmethod
     def create_user(cls, pseudo, password):
-        puuid_player = DBHandler.get_puuid(pseudo)
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        f"insert into projet_info.utilisateur values ('{pseudo}','{password}', 'user', '{puuid_player}')"
+                        f"insert into projet_info.utilisateur values ('{pseudo}','{password}', 'user')"
                     )
                 connection.commit()
             return True
@@ -62,7 +60,7 @@ class DBHandler(metaclass=Singleton):
                     f"where u.pseudo = '{pseudo}'"
                 )
 
-                res = cursor.fetchone()["poste"]
+                res = cursor.fetchone()["role"]
 
         return res
 
@@ -77,7 +75,7 @@ class DBHandler(metaclass=Singleton):
                 res = cursor.fetchall()
         
         for elt in res:
-            print(f'{elt["pseudo"]} - {elt["poste"]}')
+            print(f'{elt["pseudo"]} - {elt["role"]}')
 
         InputHandler.get_input("Appuyer sur une touche pour revenir au menu : ")
 
@@ -91,9 +89,9 @@ class DBHandler(metaclass=Singleton):
         
         info_to_update = InputHandler.get_integer_input("1 - Modifier le mdp \n2 - Modifier le rôle\nChoix : ", 1, 2)
         if info_to_update == 1:
-            DBHandler.update_password(pseudo_compte)
+            return DBHandler.update_password(pseudo_compte)
         elif info_to_update == 2:
-            DBHandler.update_role(pseudo_compte)
+            return DBHandler.update_role(pseudo_compte)
 
     @classmethod
     def update_password(cls, pseudo_compte):
@@ -135,14 +133,3 @@ class DBHandler(metaclass=Singleton):
                     "delete from projet_info.utilisateur u "
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
-
-
-    @classmethod
-    def get_puuid(cls, pseudo):
-        url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
-        response = requests.get(url, params=DBGamesHandler.params)
-
-        if response.status_code == 200:
-            return response.json()["puuid"]
-        else:
-            False

@@ -8,22 +8,19 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-497e6654-b07b-4f8e-8ede-662a10228b63"
+        "api_key" : "RGAPI-274a70bb-86c4-40e8-8497-88800cddef60"
     }
 
-    @classmethod
-    def generate_graph(cls):
-        InputHandler.clear_screen()
-        pseudo_to_analyze = InputHandler.get_input("Entrez le pseudo du joueur à analyser : ")
-        DBGamesHandler.update_database(pseudo_to_analyze)
+    nb_games = 0
     
     @classmethod
-    def update_database(cls, pseudo):
+    def update_database(cls, pseudo, start=0, count=60):
         player_puuid = DBGamesHandler.get_puuid(pseudo)
-        last_games = DBGamesHandler.get_player_games(player_puuid, 0, 30)
+        last_games = DBGamesHandler.get_player_games(player_puuid, start, count)
         for game in last_games:
-            if not DBGamesHandler.is_game_in_database(pseudo, game):
+            if not DBGamesHandler.is_game_in_database(player_puuid, game):
                 DBGamesHandler.add_game_information_to_database(player_puuid, game)
+
 
     @classmethod
     def get_puuid(cls, pseudo):
@@ -34,9 +31,14 @@ class DBGamesHandler(metaclass=Singleton):
                     f"where u.pseudo = '{pseudo}'"
                 )
 
-                res = cursor.fetchone()["puuid"]
-        return res
+                res = cursor.fetchone()
+        if res:
+            return res["puuid"]
+        else:
+            url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
+            response = requests.get(url, params=DBGamesHandler.params)
 
+            return response.json()["puuid"]
 
     @classmethod
     def get_player_games(cls, puuid, start=0, count=100):
@@ -45,17 +47,18 @@ class DBGamesHandler(metaclass=Singleton):
         return response.json()
 
     @classmethod
-    def is_game_in_database(cls, pseudo, matchid):
+    def is_game_in_database(cls, puuid, matchid):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
-                cursor.execute(
-                    "select count(*) from projet_info.games g "
-                    f"where g.pseudo = '{pseudo}' and g.matchid = '{matchid}'"
-                )
-
+                query = """
+                    SELECT COUNT(*) as count
+                    FROM projet_info.games g
+                    WHERE g.puuid = %s AND g.matchid = %s
+                """
+                cursor.execute(query, (puuid, matchid))
                 res = cursor.fetchone()["count"]
-
         return res == 1
+
 
     @classmethod
     def add_game_information_to_database(cls, puuid, matchid):
@@ -64,7 +67,7 @@ class DBGamesHandler(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "insert into projet_info.games values('{pseudo}', '{matchId}', '{poste}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
+                        "insert into projet_info.games values('{puuid}', '{pseudo}', '{matchId}', '{poste}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
                                                             '{totalMinionsKilled}', '{visionScore}', '{neutralMinionsKilled}', '{turretKills}', '{totalDamageDealtToChampions}',\
                                                             '{goldEarned}', '{wardsKilled}', '{wardsPlaced}', '{teamKills}', '{totalNeutralMinions}', '{totalEpicMonstersKilled}',\
                                                             '{teamNeutralMinionsKilled}')".format(**infos)
@@ -83,14 +86,15 @@ class DBGamesHandler(metaclass=Singleton):
 
         infos_response = {
             "mapId" : response["info"]["mapId"],
-            "pseudo" : info_about_player["summonerName"],
+            "puuid" : info_about_player["puuid"],
+            'pseudo' : info_about_player["summonerName"],
             "matchId" : response["metadata"]["matchId"],
             "poste" : info_about_player["individualPosition"],
             "gameDuration" : response["info"]["gameDuration"],
             "kills" : info_about_player["kills"],
             "assists" : info_about_player["assists"],
             "deaths" : info_about_player["deaths"],
-            "epicMonstersKilled" : info_about_player["dragonKills"]+info_about_player["baronKills"]+info_about_player["challenges"]["riftHeraldTakedowns"],
+            "epicMonstersKilled" : info_about_player["dragonKills"]+info_about_player["baronKills"],
             "totalMinionsKilled" :info_about_player["totalMinionsKilled"],
             "visionScore" : info_about_player["visionScore"],
             "neutralMinionsKilled" : info_about_player["neutralMinionsKilled"],
@@ -108,7 +112,7 @@ class DBGamesHandler(metaclass=Singleton):
         for participant in response["info"]["participants"]:
             infos_response["teamKills"] += participant["kills"]
             infos_response["totalNeutralMinions"] += participant["neutralMinionsKilled"]
-            infos_response["totalEpicMonstersKilled"] += participant["dragonKills"]+participant["baronKills"]+participant["challenges"]["riftHeraldTakedowns"]
+            infos_response["totalEpicMonstersKilled"] += participant["dragonKills"]+participant["baronKills"]
             if participant["teamId"] == info_about_player["teamId"]:
                 infos_response["teamNeutralMinionsKilled"] += participant["neutralMinionsKilled"]
 
