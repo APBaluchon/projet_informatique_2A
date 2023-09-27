@@ -8,7 +8,7 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-274a70bb-86c4-40e8-8497-88800cddef60"
+        "api_key" : "RGAPI-34b58e03-2c30-490b-ae9b-646d0bf3ce77"
     }
 
     nb_games = 0
