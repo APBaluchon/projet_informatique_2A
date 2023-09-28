@@ -8,7 +8,7 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-34b58e03-2c30-490b-ae9b-646d0bf3ce77"
+        "api_key" : "RGAPI-374ca466-1c74-4ea1-bde6-7f4742c65926"
     }
 
     nb_games = 0
@@ -80,7 +80,7 @@ class DBGamesHandler(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "insert into projet_info.games values('{puuid}', '{pseudo}', '{matchId}', '{poste}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
+                        "insert into projet_info.games values('{puuid}', '{pseudo}', '{matchId}', '{poste}', '{resultat}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
                                                             '{totalMinionsKilled}', '{visionScore}', '{neutralMinionsKilled}', '{turretKills}', '{totalDamageDealtToChampions}',\
                                                             '{goldEarned}', '{wardsKilled}', '{wardsPlaced}', '{teamKills}', '{totalNeutralMinions}', '{totalEpicMonstersKilled}',\
                                                             '{teamNeutralMinionsKilled}')".format(**infos)
@@ -101,6 +101,7 @@ class DBGamesHandler(metaclass=Singleton):
             "mapId" : response["info"]["mapId"],
             "puuid" : info_about_player["puuid"],
             'pseudo' : info_about_player["summonerName"],
+            "resultat" : 1 if info_about_player["win"] else 0,
             "matchId" : response["metadata"]["matchId"],
             "poste" : info_about_player["individualPosition"],
             "gameDuration" : response["info"]["gameDuration"],

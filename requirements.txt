@@ -4,3 +4,5 @@ dataclasses
 python-dotenv
 fastapi
 inquirerPy
+plotly
+dash
