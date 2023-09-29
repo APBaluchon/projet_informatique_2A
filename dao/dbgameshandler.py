@@ -8,7 +8,7 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-bf396d46-13b8-437d-91a4-0193bc5e01c0"
+        "api_key" : "RGAPI-47a4b96e-fb2d-408b-a433-ee578e04880e"
     }
     
     @classmethod
@@ -167,8 +167,24 @@ class DBGamesHandler(metaclass=Singleton):
         action = InputHandler.get_list_input("Choisissez l'action : ", choix_dict.values())
         if action == choix_dict["1"]:
             DBGamesHandler.add_games_to_database_from_one_player()
+        elif action == choix_dict["2"]:
+            DBGamesHandler.add_games_to_database_from_tier()
 
     @classmethod
     def add_games_to_database_from_one_player(cls):
         pseudo = InputHandler.get_input("Entrez le pseudo du jouer à ajouter : ")
         DBGamesHandler.update_database_games(pseudo)
+
+    @classmethod
+    def add_games_to_database_from_tier(cls):
+        choix_dict = {
+            "1" : "Fer",
+            "2" : "Bronze",
+            "3" : "Argent",
+            "4" : "Or",
+            "5" : "Platinium",
+            "6" : "Emeraude",
+            "7" : "Diamant"
+        }
+
+        action = InputHandler.get_list_input("Choisissez le rang : ", choix_dict.values())
