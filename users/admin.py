@@ -1,5 +1,6 @@
 from users.userbase import UserBase
 from dao.dbhandler import DBHandler
+from dao.dbgameshandler import DBGamesHandler
 from inputhandler.inputhandler import InputHandler
 
 
@@ -10,7 +11,8 @@ class Admin(UserBase):
             "1": "Consulter la base de données",
             "2": "Modifier les informations d'un utilisateur de la base de données",
             "3": "Supprimer un utilisateur de la base de données",
-            "4": "Quitter l'application"
+            "4": "Ajouter des informations à la base de données des parties",
+            "5": "Quitter l'application"
         }
         
     def actions(self):
@@ -24,5 +26,7 @@ class Admin(UserBase):
         elif action == self.actions_dict["3"]:
             DBHandler.delete_account_from_database()
         elif action == self.actions_dict["4"]:
+            DBGamesHandler.add_games_to_database()
+        elif action == self.actions_dict["5"]:
             quit()
         return self.actions()

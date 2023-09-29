@@ -156,3 +156,19 @@ class DBGamesHandler(metaclass=Singleton):
         url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
         response = requests.get(url, params=DBGamesHandler.params).json()[0]
         return response["tier"]
+
+    @classmethod
+    def add_games_to_database(cls):
+        choix_dict = {
+            "1" : "Ajouter un joueur en particulier",
+            "2" : "Ajouter les joueurs d'un rang"
+        }
+
+        action = InputHandler.get_list_input("Choisissez l'action : ", choix_dict.values())
+        if action == choix_dict["1"]:
+            DBGamesHandler.add_games_to_database_from_one_player()
+
+    @classmethod
+    def add_games_to_database_from_one_player(cls):
+        pseudo = InputHandler.get_input("Entrez le pseudo du jouer à ajouter : ")
+        DBGamesHandler.update_database_games(pseudo)
