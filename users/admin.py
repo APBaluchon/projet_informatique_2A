@@ -12,23 +12,17 @@ class Admin(UserBase):
             "3": "Supprimer un utilisateur de la base de données",
             "4": "Quitter l'application"
         }
-
-    def display_actions(self):
-        for key, value in self.actions_dict.items():
-            print(f"{key} - {value}")
         
     def actions(self):
         InputHandler.clear_screen()
-        self.display_actions()
-        action = InputHandler.get_integer_input("Entrez l'action à réaliser : ", 1, 4)
-        InputHandler.clear_screen()
+        action = InputHandler.get_list_input("Selectionnez l'action", self.actions_dict.values())
 
-        if action == 1:
+        if action == self.actions_dict["1"]:
             DBHandler.display_database()
-        elif action == 2:
+        elif action == self.actions_dict["2"]:
             DBHandler.update_database()
-        elif action == 3:
+        elif action == self.actions_dict["3"]:
             DBHandler.delete_account_from_database()
-        elif action == 4:
+        elif action == self.actions_dict["4"]:
             quit()
         return self.actions()

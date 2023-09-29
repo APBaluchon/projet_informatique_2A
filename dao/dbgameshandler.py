@@ -8,13 +8,11 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-374ca466-1c74-4ea1-bde6-7f4742c65926"
+        "api_key" : "RGAPI-bf396d46-13b8-437d-91a4-0193bc5e01c0"
     }
-
-    nb_games = 0
     
     @classmethod
-    def update_database(cls, pseudo, start=0, count=60):
+    def update_database_games(cls, pseudo, start=0, count=60):
         player_puuid = DBGamesHandler.get_puuid(pseudo)
         last_games = DBGamesHandler.get_player_games(player_puuid, start, count)
         for game in last_games:
@@ -27,8 +25,8 @@ class DBGamesHandler(metaclass=Singleton):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "select * from projet_info.utilisateur u "
-                    f"where u.pseudo = '{pseudo}'"
+                    "select * from projet_info.players p "
+                    f"where p.summonername = '{pseudo}'"
                 )
 
                 res = cursor.fetchone()
@@ -37,7 +35,6 @@ class DBGamesHandler(metaclass=Singleton):
         else:
             url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
             response = requests.get(url, params=DBGamesHandler.params)
-
             return response.json()["puuid"]
 
     @classmethod
@@ -72,6 +69,18 @@ class DBGamesHandler(metaclass=Singleton):
                 res = cursor.fetchall()
         return res    
 
+    @classmethod
+    def get_all_games_for_one_position(cls, poste):
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT * "
+                    "FROM projet_info.games g "
+                    f"WHERE g.poste = '{poste}'"
+                )
+
+                res = cursor.fetchall()
+        return res       
 
     @classmethod
     def add_game_information_to_database(cls, puuid, matchid):
@@ -80,7 +89,7 @@ class DBGamesHandler(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "insert into projet_info.games values('{puuid}', '{pseudo}', '{matchId}', '{poste}', '{resultat}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
+                        "insert into projet_info.games values('{puuid}', '{matchId}', '{poste}', '{resultat}', '{gameDuration}', '{kills}', '{assists}', '{deaths}', '{epicMonstersKilled}',\
                                                             '{totalMinionsKilled}', '{visionScore}', '{neutralMinionsKilled}', '{turretKills}', '{totalDamageDealtToChampions}',\
                                                             '{goldEarned}', '{wardsKilled}', '{wardsPlaced}', '{teamKills}', '{totalNeutralMinions}', '{totalEpicMonstersKilled}',\
                                                             '{teamNeutralMinionsKilled}')".format(**infos)
@@ -100,7 +109,6 @@ class DBGamesHandler(metaclass=Singleton):
         infos_response = {
             "mapId" : response["info"]["mapId"],
             "puuid" : info_about_player["puuid"],
-            'pseudo' : info_about_player["summonerName"],
             "resultat" : 1 if info_about_player["win"] else 0,
             "matchId" : response["metadata"]["matchId"],
             "poste" : info_about_player["individualPosition"],
@@ -132,3 +140,19 @@ class DBGamesHandler(metaclass=Singleton):
 
         return infos_response
 
+    @classmethod
+    def get_player_id(cls, pseudo):
+        url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
+        response = requests.get(url, params=DBGamesHandler.params).json()
+        print(response)
+        input()
+        return response["id"]
+
+    @classmethod
+    def get_player_rank(cls, pseudo):
+        id_player = DBGamesHandler.get_player_id(pseudo)
+        print(id_player)
+        input()
+        url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
+        response = requests.get(url, params=DBGamesHandler.params).json()[0]
+        return response["tier"]

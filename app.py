@@ -3,6 +3,9 @@ from dao.dbhandler import DBHandler
 from users.user import User
 from users.admin import Admin
 
+from InquirerPy import prompt
+from InquirerPy.validator import NumberValidator
+
 
 class App:
     
@@ -13,6 +16,7 @@ class App:
 
     def ask_for_pseudo(self):
         self.handler.clear_screen()
+        
         self.pseudo = self.handler.get_input("Pseudo : ")
 
         if DBHandler.is_user_in_db(self.pseudo):
@@ -23,17 +27,17 @@ class App:
 
     def ask_for_password(self):
         self.handler.clear_screen()
-        self.password = self.handler.get_input("Password : ")
+        self.password = self.handler.get_input("Password : ", "password")
 
         while not DBHandler.is_password_correct(self.pseudo, self.password):
             print("Mot de passe incorrect. Veuillez réessayer.")
-            self.password = self.handler.get_input("Password : ")
+            self.password = self.handler.get_input("Password : ", "password")
 
         return self.handle_user_actions()
 
     def create_new_account(self):
         self.handler.clear_screen()
-        self.password = self.handler.get_input("Entrez un nouveau mot de passe pour créer un compte : ")
+        self.password = self.handler.get_input("Entrez un nouveau mot de passe pour créer un compte : ", "password")
         if DBHandler.create_user(self.pseudo, self.password):
             print("Compte créé avec succès!")
             return self.handle_user_actions()

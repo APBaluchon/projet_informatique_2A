@@ -77,25 +77,28 @@ class DBHandler(metaclass=Singleton):
         for elt in res:
             print(f'{elt["pseudo"]} - {elt["role"]}')
 
-        InputHandler.get_input("Appuyer sur une touche pour revenir au menu : ")
+        InputHandler.get_input("Appuyer sur une Entrée pour revenir au menu")
 
     @classmethod
     def update_database(cls):
         pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
-
+        possibilities_dict = {
+            "1" : "Password",
+            "2" : "Rôle"
+        }
         while not DBHandler.is_user_in_db(pseudo_compte):
             print("Le pseudo n'est pas dans la base de données.")
             pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
         
-        info_to_update = InputHandler.get_integer_input("1 - Modifier le mdp \n2 - Modifier le rôle\nChoix : ", 1, 2)
-        if info_to_update == 1:
+        info_to_update = InputHandler.get_list_input("Choissiez l'information à modifier :", possibilities_dict.values())
+        if info_to_update == possibilities_dict["1"]:
             return DBHandler.update_password(pseudo_compte)
-        elif info_to_update == 2:
+        elif info_to_update == possibilities_dict["2"]:
             return DBHandler.update_role(pseudo_compte)
 
     @classmethod
     def update_password(cls, pseudo_compte):
-        new_password = InputHandler.get_input("Entrer le nouveau mot de passe du compte : ")
+        new_password = InputHandler.get_input("Entrer le nouveau mot de passe du compte : ", "password")
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(

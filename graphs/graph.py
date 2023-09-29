@@ -3,30 +3,40 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 from dash import html, Dash, dcc
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 
 class Graph(ABC):
 
-    def __init__(self, pseudo):
+    def __init__(self, pseudo, poste):
         self.pseudo = pseudo
-        self.indicators = dict()
+        self.poste = poste
+        self.indicators_players = dict()
+        self.indicators_others = dict()
         self.indicators_explain = dict()
-        self.calculate_indicators()
+        self.calculate_indicators_players()
         self.display_graph()
+        
 
     @abstractmethod
-    def calculate_indicators(self):
+    def calculate_indicators_players(self):
         pass
 
     def display_graph(self):
         app = Dash("Analytics")
-        df = pd.DataFrame(dict(r = self.indicators.values(),
-                               theta = self.indicators.keys()))
-        fig = px.line_polar(df, r="r", theta="theta", line_close=True, template="ggplot2")
-        fig.update_traces(fill="toself")
+
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+        fig_player = go.Scatterpolar(r = list(self.indicators_players.values()),
+                                     theta = list(self.indicators_players.keys()),
+                                     fill = "toself",
+                                     showlegend=False)
+
+        fig.add_trace(fig_player)
         
         app.layout = html.Div([
-            html.H1(f"Analyse des performances de {self.pseudo}", style = {"textAlign" : "center"}),
+            html.H1(f"Analyse des performances de {self.pseudo} pour le {self.poste}", style = {"textAlign" : "center"}),
             dcc.Graph(id="graph", figure = fig),
             html.Ul([html.Li(f"{key} : {val}") for key, val in self.indicators_explain.items()])
         ])
