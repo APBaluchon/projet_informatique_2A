@@ -8,7 +8,7 @@ import os
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-47a4b96e-fb2d-408b-a433-ee578e04880e"
+        "api_key" : "RGAPI-d6e66027-deca-4f67-8177-80910de3882c"
     }
     
     @classmethod
@@ -71,17 +71,20 @@ class DBGamesHandler(metaclass=Singleton):
         return res    
 
     @classmethod
-    def get_all_games_for_one_position(cls, poste):
+    def get_all_games_for_one_position_and_one_tier(cls, poste, tier):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT * "
-                    "FROM projet_info.games g "
-                    f"WHERE g.poste = '{poste}'"
-                )
-
+                query = """
+                    SELECT * 
+                    FROM projet_info.games g 
+                    JOIN projet_info.players p ON g.puuid = p.puuid
+                    WHERE g.poste = %s AND p.rang = %s
+                """
+                cursor.execute(query, (poste, tier))
                 res = cursor.fetchall()
-        return res       
+        return res
+
+     
 
     @classmethod
     def add_game_information_to_database(cls, puuid, matchid):
@@ -149,10 +152,21 @@ class DBGamesHandler(metaclass=Singleton):
 
     @classmethod
     def get_player_rank(cls, pseudo):
-        id_player = DBGamesHandler.get_player_id(pseudo)
-        url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
-        response = requests.get(url, params=DBGamesHandler.params).json()[0]
-        return response["tier"]
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "select * from projet_info.players p "
+                    f"where p.summonername = '{pseudo}'"
+                )
+
+                res = cursor.fetchone()
+        if res:
+            return res["rang"]
+        else:
+            id_player = DBGamesHandler.get_player_id(pseudo)
+            url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
+            response = requests.get(url, params=DBGamesHandler.params).json()[0]
+            return response["tier"]
 
     @classmethod
     def add_games_to_database(cls):

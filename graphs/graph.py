@@ -9,9 +9,10 @@ import plotly.graph_objects as go
 
 class Graph(ABC):
 
-    def __init__(self, pseudo, poste):
+    def __init__(self, pseudo, poste, rank = None):
         self.pseudo = pseudo
         self.poste = poste
+        self.rank = rank
         self.indicators_players = dict()
         self.indicators_others = dict()
         self.indicators_explain = dict()
@@ -39,7 +40,7 @@ class Graph(ABC):
         theta_values_others = list(self.indicators_others.keys())
         r_values_others.append(r_values_others[0])
         theta_values_others.append(theta_values_others[0])
-        fig_others = go.Scatterpolar(r=r_values_others, theta=theta_values_others, fill='toself', name="Autres")
+        fig_others = go.Scatterpolar(r=r_values_others, theta=theta_values_others, fill='toself', name=self.rank)
         fig.add_trace(fig_others)
         
         app.layout = html.Div([

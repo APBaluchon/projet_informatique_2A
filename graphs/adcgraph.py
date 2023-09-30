@@ -10,8 +10,9 @@ class AdcGraph(Graph):
     
     def calculate_indicators_players(self):
         player_puuid = DBGamesHandler.get_puuid(self.pseudo)
+        self.rank = DBGamesHandler.get_player_rank(self.pseudo)
         datas = DBGamesHandler.get_games_for_one_position(player_puuid, "BOTTOM")
-        datas_others = DBGamesHandler.get_all_games_for_one_position("BOTTOM")
+        datas_others = DBGamesHandler.get_all_games_for_one_position_and_one_tier("BOTTOM", self.rank)
         df = self.convert_datas_to_dataframe(datas)
         df_others = self.convert_datas_to_dataframe(datas_others)
         

@@ -136,3 +136,13 @@ class DBHandler(metaclass=Singleton):
                     "delete from projet_info.utilisateur u "
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
+
+    @classmethod
+    def create_new_account(cls, pseudo):
+        InputHandler.clear_screen()
+        password = InputHandler.get_input("Entrez un nouveau mot de passe pour créer un compte : ", "password")
+        if DBHandler.create_user(pseudo, password):
+            print("Compte créé avec succès!")
+            return password
+        else:
+            return self.create_new_account()

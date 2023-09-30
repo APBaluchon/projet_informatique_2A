@@ -22,8 +22,8 @@ class App:
         if DBHandler.is_user_in_db(self.pseudo):
             return self.ask_for_password()
         else:
-            print("Pseudo non trouvé. Veuillez créer un compte.")
-            return self.create_new_account()
+            self.password = DBHandler.create_new_account(self.pseudo)
+            return self.handle_user_actions()
 
     def ask_for_password(self):
         self.handler.clear_screen()
@@ -34,15 +34,6 @@ class App:
             self.password = self.handler.get_input("Password : ", "password")
 
         return self.handle_user_actions()
-
-    def create_new_account(self):
-        self.handler.clear_screen()
-        self.password = self.handler.get_input("Entrez un nouveau mot de passe pour créer un compte : ", "password")
-        if DBHandler.create_user(self.pseudo, self.password):
-            print("Compte créé avec succès!")
-            return self.handle_user_actions()
-        else:
-            return self.create_new_account()
 
     def handle_user_actions(self):
         self.handler.clear_screen()
