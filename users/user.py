@@ -1,7 +1,6 @@
 from users.userbase import UserBase
 from inputhandler.inputhandler import InputHandler
 from dao.dbgameshandler import DBGamesHandler
-from dao.dbplayershandler import DBPlayersHandler
 from graphs.topgraph import TopGraph
 from graphs.junglergraph import JunglerGraph
 from graphs.midgraph import  MidGraph
@@ -41,7 +40,6 @@ class User(UserBase):
         pseudo_to_analyze = InputHandler.get_input("Entrez le pseudo du joueur à analyser : ")
 
         DBGamesHandler.update_database_games(pseudo_to_analyze)
-        DBPlayersHandler.update_database_players(pseudo_to_analyze)
 
         poste = InputHandler.get_list_input("Entrez le poste à analyser : ", self.postes_dict.values())
         if poste==self.postes_dict["1"]:

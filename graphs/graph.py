@@ -26,10 +26,8 @@ class Graph(ABC):
     def display_graph(self):
         app = Dash(__name__)
 
-        # Créer une figure avec un subplot de type 'polar'
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
         
-        # Ajout du premier trace
         r_values_player = list(self.indicators_players.values())
         theta_values_player = list(self.indicators_players.keys())
         r_values_player.append(r_values_player[0])
@@ -37,7 +35,6 @@ class Graph(ABC):
         fig_player = go.Scatterpolar(r=r_values_player, theta=theta_values_player, fill='toself', name=f"{self.pseudo}")
         fig.add_trace(fig_player)
 
-        # Ajout du deuxième trace
         r_values_others = list(self.indicators_others.values())
         theta_values_others = list(self.indicators_others.keys())
         r_values_others.append(r_values_others[0])
@@ -45,7 +42,6 @@ class Graph(ABC):
         fig_others = go.Scatterpolar(r=r_values_others, theta=theta_values_others, fill='toself', name="Autres")
         fig.add_trace(fig_others)
         
-        # Définir le layout de l'application Dash
         app.layout = html.Div([
             html.H1(f"Analyse des performances de {self.pseudo} pour le {self.poste}", style={"textAlign": "center"}),
             dcc.Graph(id="graph", figure=fig),

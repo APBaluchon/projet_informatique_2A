@@ -13,6 +13,7 @@ class DBGamesHandler(metaclass=Singleton):
     
     @classmethod
     def update_database_games(cls, pseudo, start=0, count=60):
+        DBGamesHandler.update_database_players(pseudo)
         player_puuid = DBGamesHandler.get_puuid(pseudo)
         last_games = DBGamesHandler.get_player_games(player_puuid, start, count)
         for game in last_games:
@@ -144,15 +145,11 @@ class DBGamesHandler(metaclass=Singleton):
     def get_player_id(cls, pseudo):
         url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
         response = requests.get(url, params=DBGamesHandler.params).json()
-        print(response)
-        input()
         return response["id"]
 
     @classmethod
     def get_player_rank(cls, pseudo):
         id_player = DBGamesHandler.get_player_id(pseudo)
-        print(id_player)
-        input()
         url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
         response = requests.get(url, params=DBGamesHandler.params).json()[0]
         return response["tier"]
@@ -188,3 +185,24 @@ class DBGamesHandler(metaclass=Singleton):
         }
 
         action = InputHandler.get_list_input("Choisissez le rang : ", choix_dict.values())
+
+    @classmethod
+    def update_database_players(cls, pseudo):
+        res = 1
+        with DBConnection().connection as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "select count(*) as count from projet_info.players p "
+                    f"where p.summonername = '{pseudo}'"
+                )
+
+                res = cursor.fetchone()["count"]
+
+        if res == 0:
+            rank = DBGamesHandler.get_player_rank(pseudo)
+            puuid = DBGamesHandler.get_puuid(pseudo)
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                            f"insert into projet_info.players values('{puuid}', '{pseudo}', '{rank}')"
+                    )
