@@ -5,6 +5,7 @@ import numpy as np
 from dash import html, Dash, dcc
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from dao.dbgameshandler import DBGamesHandler
 
 
 class Graph(ABC):
@@ -13,16 +14,24 @@ class Graph(ABC):
         self.pseudo = pseudo
         self.poste = poste
         self.rank = rank
+        self.indicators = dict()
         self.indicators_players = dict()
         self.indicators_others = dict()
         self.indicators_explain = dict()
-        self.calculate_indicators_players()
-        self.display_graph()
         
 
-    @abstractmethod
     def calculate_indicators_players(self):
-        pass
+        player_puuid = DBGamesHandler.get_puuid(self.pseudo)
+        self.rank = DBGamesHandler.get_player_rank(self.pseudo)
+        datas = DBGamesHandler.get_games_for_one_position(player_puuid, self.poste)
+        datas_others = DBGamesHandler.get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
+        df = self.convert_datas_to_dataframe(datas)
+        df_others = self.convert_datas_to_dataframe(datas_others)
+
+        for indicateur, details in self.indicators.items():
+            self.indicators_players[indicateur] = self.interpolate(details["formule"](df), 0, details["max"])
+            self.indicators_others[indicateur] = self.interpolate(details["formule"](df_others), 0, details["max"])
+            self.indicators_explain[indicateur] = details["explication"]
 
     def display_graph(self):
         app = Dash(__name__)
@@ -30,6 +39,8 @@ class Graph(ABC):
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
         
         r_values_player = list(self.indicators_players.values())
+        print(r_values_player)
+        input()
         theta_values_player = list(self.indicators_players.keys())
         r_values_player.append(r_values_player[0])
         theta_values_player.append(theta_values_player[0])

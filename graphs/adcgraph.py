@@ -7,30 +7,33 @@ class AdcGraph(Graph):
 
     def __init__(self, pseudo):
         super().__init__(pseudo, "BOTTOM")
-    
-    def calculate_indicators_players(self):
-        player_puuid = DBGamesHandler.get_puuid(self.pseudo)
-        self.rank = DBGamesHandler.get_player_rank(self.pseudo)
-        datas = DBGamesHandler.get_games_for_one_position(player_puuid, "BOTTOM")
-        datas_others = DBGamesHandler.get_all_games_for_one_position_and_one_tier("BOTTOM", self.rank)
-        df = self.convert_datas_to_dataframe(datas)
-        df_others = self.convert_datas_to_dataframe(datas_others)
-        
-        self.indicators_players["🏹"] = self.interpolate((df["totaldamagedealttochampions"] / df["gameduration"]) * 60, 0, 2000) 
-        self.indicators_players["🌾"] = self.interpolate((df["totalminionskilled"] / df["gameduration"]) * 60, 0, 10) 
-        self.indicators_players["☠️"] = self.interpolate((df["kills"] + df["assists"]) / (df["deaths"] + 1), 0, 10) 
-        self.indicators_players["🎯"] = self.interpolate(df["turretkills"], 0, 10)
-        self.indicators_players["💰"] = self.interpolate((df["goldearned"] / df["gameduration"]) * 60, 0, 800) 
+        self.indicators = {
+            "🏹": {
+                "formule": lambda df: (df["totaldamagedealttochampions"] / df["gameduration"]) * 60, 
+                "max": 2000, 
+                "explication": "Dommages par Minute aux Champions"
+            },
+            "🌾": {
+                "formule": lambda df: (df["totalminionskilled"] / df["gameduration"]) * 60, 
+                "max": 10, 
+                "explication": "CS par Minute"
+            },
+            "☠️": {
+                "formule": lambda df: (df["kills"] + df["assists"]) / (df["deaths"] + 1), 
+                "max": 10, 
+                "explication": "Efficacité des Combats (Kills + Assists / Deaths)"
+            },
+            "🎯": {
+                "formule": lambda df: df["turretkills"], 
+                "max": 10,
+                "explication": "Objectifs Pris (Tours détruits)"
+            },
+            "💰": {
+                "formule": lambda df: (df["goldearned"] / df["gameduration"]) * 60, 
+                "max": 800, 
+                "explication": "Gold par Minute"
+            }
+        }
+        self.calculate_indicators_players()
+        self.display_graph()
 
-        self.indicators_others["🏹"] = self.interpolate((df_others["totaldamagedealttochampions"] / df_others["gameduration"]) * 60, 0, 2000) 
-        self.indicators_others["🌾"] = self.interpolate((df_others["totalminionskilled"] / df_others["gameduration"]) * 60, 0, 10) 
-        self.indicators_others["☠️"] = self.interpolate((df_others["kills"] + df_others["assists"]) / (df_others["deaths"] + 1), 0, 10) 
-        self.indicators_others["🎯"] = self.interpolate(df_others["turretkills"], 0, 10)
-        self.indicators_others["💰"] = self.interpolate((df_others["goldearned"] / df_others["gameduration"]) * 60, 0, 800) 
-        
-        self.indicators_explain["🏹"] = "Dommages par Minute aux Champions"
-        self.indicators_explain["🌾"] = "CS par Minute"
-        self.indicators_explain["☠️"] = "Efficacité des Combats (Kills + Assists / Deaths)"
-        self.indicators_explain["🎯"] = "Objectifs Pris (Tours détruits)"
-        self.indicators_explain["💰"] = "Gold par Minute"
- 
