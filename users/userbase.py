@@ -4,6 +4,9 @@ from inputhandler.inputhandler import InputHandler
 
 class UserBase(ABC):
 
+    def __init__(self):
+        self.actions_dict = dict()
+
     @abstractmethod
     def actions(self):
         pass

@@ -1,8 +1,6 @@
 from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
 from inputhandler.inputhandler import InputHandler
-from dao.dbgameshandler import DBGamesHandler
-
 
 class DBHandler(metaclass=Singleton):
 
