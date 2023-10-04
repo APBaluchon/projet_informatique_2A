@@ -1,7 +1,6 @@
 import os
 from InquirerPy import prompt
 from InquirerPy.validator import NumberValidator
-from inputhandler.inputhandler import InputHandler
 
 
 class InputHandler:
