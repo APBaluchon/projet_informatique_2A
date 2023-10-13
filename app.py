@@ -3,7 +3,6 @@ from dao.dbhandler import DBHandler
 from users.user import User
 from users.admin import Admin
 
-from view.view import View
 
 class App:
     
