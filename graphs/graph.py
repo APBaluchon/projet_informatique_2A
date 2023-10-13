@@ -39,8 +39,6 @@ class Graph(ABC):
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
         
         r_values_player = list(self.indicators_players.values())
-        print(r_values_player)
-        input()
         theta_values_player = list(self.indicators_players.keys())
         r_values_player.append(r_values_player[0])
         theta_values_player.append(theta_values_player[0])
