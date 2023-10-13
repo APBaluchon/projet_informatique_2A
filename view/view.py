@@ -1,15 +1,12 @@
 import os
 from InquirerPy import prompt
-from InquirerPy.validator import NumberValidator
 
 
-class InputHandler:
-    @staticmethod
-    def clear_screen():
+class View:
+    def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    @staticmethod
-    def get_input(message, type_message = "input"):
+    def get_input(self, message, type_message = "input"):
         questions = [
             {"type" : type_message,
              "message" : message,
@@ -19,8 +16,7 @@ class InputHandler:
         result = prompt(questions)
         return result["resultat"]
 
-    @staticmethod
-    def get_list_input(message, list_values):
+    def get_list_input(self, message, list_values):
         questions = [{
             "type" : "list",
             "message" : message,
@@ -31,8 +27,7 @@ class InputHandler:
         result = prompt(questions)["resultat"]
         return result
 
-    @staticmethod
-    def get_integer_input(prompt, min, max):
+    def get_integer_input(self, prompt, min, max):
         while True:
             user_input = InputHandler.get_input(prompt)
             try:

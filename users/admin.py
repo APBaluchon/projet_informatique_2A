@@ -1,32 +1,23 @@
 from users.userbase import UserBase
 from dao.dbhandler import DBHandler
 from dao.dbgameshandler import DBGamesHandler
-from inputhandler.inputhandler import InputHandler
+from view.adminview import AdminView
 
 
 class Admin(UserBase):
-
-    def __init__(self):
-        self.actions_dict = {
-            "1": "Consulter la base de données",
-            "2": "Modifier les informations d'un utilisateur de la base de données",
-            "3": "Supprimer un utilisateur de la base de données",
-            "4": "Ajouter des informations à la base de données des parties",
-            "5": "Quitter l'application"
-        }
         
     def actions(self):
-        InputHandler.clear_screen()
-        action = InputHandler.get_list_input("Selectionnez l'action", self.actions_dict.values())
+        AdminView().clear_screen()
+        action = AdminView().ask_choice()
 
-        if action == self.actions_dict["1"]:
-            DBHandler.display_database()
-        elif action == self.actions_dict["2"]:
-            DBHandler.update_database()
-        elif action == self.actions_dict["3"]:
-            DBHandler.delete_account_from_database()
-        elif action == self.actions_dict["4"]:
-            DBGamesHandler.add_games_to_database()
-        elif action == self.actions_dict["5"]:
+        if action == AdminView().actions_dict["1"]:
+            DBHandler().display_database()
+        elif action == AdminView().actions_dict["2"]:
+            DBHandler().update_database()
+        elif action == AdminView().actions_dict["3"]:
+            DBHandler().delete_account_from_database()
+        elif action == AdminView().actions_dict["4"]:
+            DBGamesHandler().add_games_to_database()
+        elif action == AdminView().actions_dict["5"]:
             quit()
         return self.actions()

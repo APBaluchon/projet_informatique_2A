@@ -1,8 +1,7 @@
 from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
-from inputhandler.inputhandler import InputHandler
 import requests
-import os
+from view.adminview import AdminView
 
 
 class DBGamesHandler(metaclass=Singleton):
@@ -11,18 +10,16 @@ class DBGamesHandler(metaclass=Singleton):
         "api_key" : "RGAPI-a254ff27-5fdd-4738-b146-589c607f2314"
     }
     
-    @classmethod
-    def update_database_games(cls, pseudo, start=0, count=60):
-        DBGamesHandler.update_database_players(pseudo)
-        player_puuid = DBGamesHandler.get_puuid(pseudo)
-        last_games = DBGamesHandler.get_player_games(player_puuid, start, count)
+    def update_database_games(self, pseudo, start=0, count=60):
+        DBGamesHandler().update_database_players(pseudo)
+        player_puuid = DBGamesHandler().get_puuid(pseudo)
+        last_games = DBGamesHandler().get_player_games(player_puuid, start, count)
         for game in last_games:
-            if not DBGamesHandler.is_game_in_database(player_puuid, game):
-                DBGamesHandler.add_game_information_to_database(player_puuid, game)
+            if not DBGamesHandler().is_game_in_database(player_puuid, game):
+                DBGamesHandler().add_game_information_to_database(player_puuid, game)
 
 
-    @classmethod
-    def get_puuid(cls, pseudo):
+    def get_puuid(self, pseudo):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -38,14 +35,12 @@ class DBGamesHandler(metaclass=Singleton):
             response = requests.get(url, params=DBGamesHandler.params)
             return response.json()["puuid"]
 
-    @classmethod
-    def get_player_games(cls, puuid, start=0, count=100):
+    def get_player_games(self, puuid, start=0, count=100):
         url = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
         response = requests.get(url, params=DBGamesHandler.params)
         return response.json()
 
-    @classmethod
-    def is_game_in_database(cls, puuid, matchid):
+    def is_game_in_database(self, puuid, matchid):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 query = """
@@ -57,8 +52,7 @@ class DBGamesHandler(metaclass=Singleton):
                 res = cursor.fetchone()["count"]
         return res == 1
 
-    @classmethod
-    def get_games_for_one_position(cls, puuid, poste):
+    def get_games_for_one_position(self, puuid, poste):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 query = """
@@ -70,8 +64,7 @@ class DBGamesHandler(metaclass=Singleton):
                 res = cursor.fetchall()
         return res    
 
-    @classmethod
-    def get_all_games_for_one_position_and_one_tier(cls, poste, tier):
+    def get_all_games_for_one_position_and_one_tier(self, poste, tier):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 query = """
@@ -84,11 +77,8 @@ class DBGamesHandler(metaclass=Singleton):
                 res = cursor.fetchall()
         return res
 
-     
-
-    @classmethod
-    def add_game_information_to_database(cls, puuid, matchid):
-        infos = DBGamesHandler.get_all_variables_for_database(puuid, matchid)
+    def add_game_information_to_database(self, puuid, matchid):
+        infos = DBGamesHandler().get_all_variables_for_database(puuid, matchid)
         if infos["mapId"] == 11:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -100,7 +90,7 @@ class DBGamesHandler(metaclass=Singleton):
                     )
 
     @classmethod
-    def get_all_variables_for_database(cls, puuid, matchid):
+    def get_all_variables_for_database(self, puuid, matchid):
         url = f"https://europe.api.riotgames.com/lol/match/v5/matches/{matchid}"
         response = requests.get(url, params=DBGamesHandler.params).json()
 
@@ -144,14 +134,12 @@ class DBGamesHandler(metaclass=Singleton):
 
         return infos_response
 
-    @classmethod
-    def get_player_id(cls, pseudo):
+    def get_player_id(self, pseudo):
         url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
         response = requests.get(url, params=DBGamesHandler.params).json()
         return response["id"]
 
-    @classmethod
-    def get_player_rank(cls, pseudo):
+    def get_player_rank(self, pseudo):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -163,45 +151,27 @@ class DBGamesHandler(metaclass=Singleton):
         if res:
             return res["rang"]
         else:
-            id_player = DBGamesHandler.get_player_id(pseudo)
+            id_player = DBGamesHandler().get_player_id(pseudo)
             url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
             response = requests.get(url, params=DBGamesHandler.params).json()[0]
             return response["tier"]
 
-    @classmethod
-    def add_games_to_database(cls):
-        choix_dict = {
-            "1" : "Ajouter un joueur en particulier",
-            "2" : "Ajouter les joueurs d'un rang"
-        }
+    def add_games_to_database(self):
 
-        action = InputHandler.get_list_input("Choisissez l'action : ", choix_dict.values())
-        if action == choix_dict["1"]:
-            DBGamesHandler.add_games_to_database_from_one_player()
-        elif action == choix_dict["2"]:
-            DBGamesHandler.add_games_to_database_from_tier()
+        action = AdminView().ask_action()
+        if action == AdminView().choix_dict["1"]:
+            DBGamesHandler().add_games_to_database_from_one_player()
+        elif action == AdminView().choix_dict["2"]:
+            DBGamesHandler().add_games_to_database_from_tier()
 
-    @classmethod
-    def add_games_to_database_from_one_player(cls):
-        pseudo = InputHandler.get_input("Entrez le pseudo du jouer à ajouter : ")
-        DBGamesHandler.update_database_games(pseudo)
+    def add_games_to_database_from_one_player(self):
+        pseudo = AdminView().ask_pseudo_to_add()
+        DBGamesHandler().update_database_games(pseudo)
 
-    @classmethod
-    def add_games_to_database_from_tier(cls):
-        choix_dict = {
-            "1" : "Fer",
-            "2" : "Bronze",
-            "3" : "Argent",
-            "4" : "Or",
-            "5" : "Platinium",
-            "6" : "Emeraude",
-            "7" : "Diamant"
-        }
+    def add_games_to_database_from_tier(self):
+        action = AdminView.ask_tier_to_add()
 
-        action = InputHandler.get_list_input("Choisissez le rang : ", choix_dict.values())
-
-    @classmethod
-    def update_database_players(cls, pseudo):
+    def update_database_players(self, pseudo):
         res = 1
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:

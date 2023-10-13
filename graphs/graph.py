@@ -1,5 +1,3 @@
-from abc import ABC, abstractmethod
-import plotly.express as px
 import pandas as pd
 import numpy as np
 from dash import html, Dash, dcc
@@ -8,7 +6,7 @@ import plotly.graph_objects as go
 from dao.dbgameshandler import DBGamesHandler
 
 
-class Graph(ABC):
+class Graph:
 
     def __init__(self, pseudo, poste, rank = None):
         self.pseudo = pseudo
@@ -21,10 +19,10 @@ class Graph(ABC):
         
 
     def calculate_indicators_players(self):
-        player_puuid = DBGamesHandler.get_puuid(self.pseudo)
-        self.rank = DBGamesHandler.get_player_rank(self.pseudo)
-        datas = DBGamesHandler.get_games_for_one_position(player_puuid, self.poste)
-        datas_others = DBGamesHandler.get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
+        player_puuid = DBGamesHandler().get_puuid(self.pseudo)
+        self.rank = DBGamesHandler().get_player_rank(self.pseudo)
+        datas = DBGamesHandler().get_games_for_one_position(player_puuid, self.poste)
+        datas_others = DBGamesHandler().get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
         df = self.convert_datas_to_dataframe(datas)
         df_others = self.convert_datas_to_dataframe(datas_others)
 

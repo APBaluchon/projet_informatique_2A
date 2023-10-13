@@ -1,11 +1,11 @@
 from dao.dbconnection import DBConnection
 from singleton.singleton import Singleton
-from inputhandler.inputhandler import InputHandler
+from view.dbview import DBView
+
 
 class DBHandler(metaclass=Singleton):
 
-    @classmethod
-    def is_user_in_db(cls, pseudo):
+    def is_user_in_db(self, pseudo):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -19,8 +19,7 @@ class DBHandler(metaclass=Singleton):
         else:
             return False
 
-    @classmethod
-    def create_user(cls, pseudo, password):
+    def create_user(self, pseudo, password):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -36,8 +35,7 @@ class DBHandler(metaclass=Singleton):
             return False 
 
 
-    @classmethod
-    def is_password_correct(cls, pseudo, password):
+    def is_password_correct(self, pseudo, password):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -49,8 +47,7 @@ class DBHandler(metaclass=Singleton):
         
         return res == password
 
-    @classmethod
-    def get_user_role(cls, pseudo):
+    def get_user_role(self, pseudo):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -62,8 +59,7 @@ class DBHandler(metaclass=Singleton):
 
         return res
 
-    @classmethod
-    def display_database(cls):
+    def display_database(self):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -75,28 +71,24 @@ class DBHandler(metaclass=Singleton):
         for elt in res:
             print(f'{elt["pseudo"]} - {elt["role"]}')
 
-        InputHandler.get_input("Appuyer sur une Entrée pour revenir au menu")
+        DBView().press_enter()
 
-    @classmethod
-    def update_database(cls):
-        pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
-        possibilities_dict = {
-            "1" : "Password",
-            "2" : "Rôle"
-        }
-        while not DBHandler.is_user_in_db(pseudo_compte):
+    def update_database(self):
+        pseudo_compte = DBView().ask_pseudo()
+
+        while not DBHandler().is_user_in_db(pseudo_compte):
             print("Le pseudo n'est pas dans la base de données.")
-            pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+            pseudo_compte = DBView.ask_pseudo()
         
-        info_to_update = InputHandler.get_list_input("Choissiez l'information à modifier :", possibilities_dict.values())
-        if info_to_update == possibilities_dict["1"]:
-            return DBHandler.update_password(pseudo_compte)
-        elif info_to_update == possibilities_dict["2"]:
-            return DBHandler.update_role(pseudo_compte)
+        info_to_update = DBView().ask_modality()
+        if info_to_update == "Password":
+            return DBHandler().update_password(pseudo_compte)
+        elif info_to_update == "Rôle":
+            return DBHandler().update_role(pseudo_compte)
 
-    @classmethod
-    def update_password(cls, pseudo_compte):
-        new_password = InputHandler.get_input("Entrer le nouveau mot de passe du compte : ", "password")
+
+    def update_password(self, pseudo_compte):
+        new_password = DBView().ask_new_password()
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -105,13 +97,13 @@ class DBHandler(metaclass=Singleton):
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
 
-    @classmethod
-    def update_role(cls, pseudo_compte):
+
+    def update_role(self, pseudo_compte):
         role_dict = {
             "admin" : "user",
             "user" : "admin"
         }
-        role_actuel = DBHandler.get_user_role(pseudo_compte)
+        role_actuel = DBHandler().get_user_role(pseudo_compte)
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
@@ -120,13 +112,13 @@ class DBHandler(metaclass=Singleton):
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
 
-    @classmethod 
-    def delete_account_from_database(cls):
-        pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
 
-        while not DBHandler.is_user_in_db(pseudo_compte):
-            print("Le pseudo n'est pas dans la base de données.")
-            pseudo_compte = InputHandler.get_input("Pseudo du compte à modifier : ")
+    def delete_account_from_database(self):
+        pseudo_compte = DBView().ask_pseudo()
+
+        while not DBHandler().is_user_in_db(pseudo_compte):
+            DBView().wrong_pseudo()
+            pseudo_compte = DBView().ask_pseudo()
 
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
@@ -135,11 +127,10 @@ class DBHandler(metaclass=Singleton):
                     f"where u.pseudo = '{pseudo_compte}'"
                 )
 
-    @classmethod
-    def create_new_account(cls, pseudo):
-        InputHandler.clear_screen()
-        password = InputHandler.get_input("Entrez un nouveau mot de passe pour créer un compte : ", "password")
-        if DBHandler.create_user(pseudo, password):
+    def create_new_account(self, pseudo):
+        DBView().clear_screen()
+        password = DBView().ask_password_new_account()
+        if DBHandler().create_user(pseudo, password):
             print("Compte créé avec succès!")
             return password
         else:
