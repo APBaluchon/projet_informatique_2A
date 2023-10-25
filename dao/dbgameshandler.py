@@ -7,7 +7,7 @@ from view.adminview import AdminView
 class DBGamesHandler(metaclass=Singleton):
 
     params = {
-        "api_key" : "RGAPI-a254ff27-5fdd-4738-b146-589c607f2314"
+        "api_key" : "RGAPI-4faf5f0a-9000-476f-b0c1-2f0daaba17ff"
     }
     
     def update_database_games(self, pseudo, start=0, count=60):
@@ -91,7 +91,12 @@ class DBGamesHandler(metaclass=Singleton):
 
     def get_all_variables_for_database(self, puuid, matchid):
         url = f"https://europe.api.riotgames.com/lol/match/v5/matches/{matchid}"
-        response = requests.get(url, params=DBGamesHandler.params).json()
+        response = requests.get(url, params=DBGamesHandler.params)
+
+        if response.status_code != 200:
+            return False
+        else:
+            response = response.json()
 
         info_about_player = None
         for participant in response["info"]["participants"]:
