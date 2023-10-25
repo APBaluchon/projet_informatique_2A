@@ -1,0 +1,48 @@
+from business_layer.controler.guestview import GuestView
+from business_layer.dao.dbhandler import DBHandler
+from business_layer.service.users.user import User
+from business_layer.service.users.admin import Admin
+
+
+class App:
+    
+    def __init__(self):
+        self.pseudo = None
+        self.password = None
+
+    def ask_for_pseudo(self):
+        GuestView().clear_screen()
+        
+        self.pseudo = GuestView().ask_pseudo()
+
+        if DBHandler().is_user_in_db(self.pseudo):
+            return self.ask_for_password()
+        else:
+            self.password = DBHandler().create_new_account(self.pseudo)
+            return self.handle_user_actions()
+
+    def ask_for_password(self):
+        GuestView().clear_screen()
+        self.password = GuestView().ask_password()
+
+        while not DBHandler().is_password_correct(self.pseudo, self.password):
+            GuestView().wrong_password()
+            self.password = GuestView().ask_password()
+
+        return self.handle_user_actions()
+
+    def handle_user_actions(self):
+        GuestView().clear_screen()
+        role = DBHandler().get_user_role(self.pseudo)
+
+        instance = Admin() if role == "admin" else User()
+        return instance.actions()
+
+    def run(self):
+        GuestView().clear_screen()
+        return self.ask_for_pseudo()
+
+
+if __name__ == "__main__":
+    app = App()
+    app.run()
