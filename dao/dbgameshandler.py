@@ -89,7 +89,6 @@ class DBGamesHandler(metaclass=Singleton):
                                                             '{teamNeutralMinionsKilled}')".format(**infos)
                     )
 
-    @classmethod
     def get_all_variables_for_database(self, puuid, matchid):
         url = f"https://europe.api.riotgames.com/lol/match/v5/matches/{matchid}"
         response = requests.get(url, params=DBGamesHandler.params).json()
