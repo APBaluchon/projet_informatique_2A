@@ -8,8 +8,20 @@ from business_layer.service.graphs.adcgraph import AdcGraph
 from business_layer.controler.userview import UserView
 
 class User(UserBase):
-        
+    """
+    A class representing a regular user, inheriting from UserBase.
+
+    This class provides specific functionalities and actions for a regular user,
+    implementing the `actions` method defined in the UserBase class.
+    """
+       
     def actions(self):
+        """
+        Implements user-specific actions.
+
+        This method allows a regular user to perform a series of actions, such as
+        accessing different types of graphical representations or user-specific views.
+        """
         action = UserView().ask_action()
 
         if action == UserView().actions_dict["1"]:
@@ -21,6 +33,15 @@ class User(UserBase):
         self.actions()
 
     def generate_graph(self):
+        """
+        Generates a graphical representation based on the user's choice.
+
+        This method first clears the screen and then asks the user to input a pseudo for analysis. 
+        It updates the database games information for the given pseudo. The user is then prompted 
+        to choose a position. Based on this choice, a specific type of graph is generated 
+        (TopGraph, JunglerGraph, MidGraph, AdcGraph, or SupportGraph) corresponding to the 
+        selected position.
+        """
         UserView().clear_screen()
         pseudo_to_analyze = UserView().ask_pseudo_for_analyse()
 

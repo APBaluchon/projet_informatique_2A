@@ -7,6 +7,12 @@ from business_layer.controler.adminview import AdminView
 class Admin(UserBase):
         
     def actions(self):
+        """
+        Implements admin-specific actions.
+
+        This method provides a series of actions that an admin user can perform, such as
+        displaying the database or other admin-specific tasks.
+        """
         AdminView().clear_screen()
         action = AdminView().ask_choice()
 

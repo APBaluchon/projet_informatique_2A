@@ -6,3 +6,4 @@ fastapi
 inquirerPy
 plotly
 dash
+haslib

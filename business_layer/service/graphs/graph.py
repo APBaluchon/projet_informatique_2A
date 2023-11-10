@@ -7,7 +7,28 @@ from business_layer.dao.dbgameshandler import DBGamesHandler
 
 
 class Graph:
+    """
+    A class representing a graph for data visualization.
 
+    This class provides functionalities to create and manage graphs based on user data.
+
+    Attributes
+    ----------
+    pseudo : str
+        The pseudo of the user for which the graph is being created.
+    poste : str
+        The in-game position to analyze
+    rank : str, optional
+        The rank of the player to analyze
+    indicators : dict
+        A dictionary to store various indicators for the graph about the player.
+    indicators_players : dict
+        A dictionary to store indicators values for player.
+    indicators_others : dict
+        A dictionary to store indicators values for tier of the player.
+    indicators_explain : dict
+        A dictionary to store explanations of items in indicators.
+    """
     def __init__(self, pseudo, poste, rank = None):
         self.pseudo = pseudo
         self.poste = poste
