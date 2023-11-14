@@ -46,11 +46,11 @@ class TopGraph(Graph):
             },
             "🎯": {
                 "formule": lambda df: df["resultat"], 
-                "max": 10,
+                "max": 1,
                 "explication": "Winrate"
             },
-            "💰": {
-                "formule": lambda df: (df["goldearned"] / df["gameduration"]) * 60, 
+            "🤝": {
+                "formule": lambda df: (df["kills"] / df["teamkills"]) , 
                 "max": 800, 
                 "explication": "Kill participation"
             }

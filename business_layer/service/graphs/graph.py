@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
-from dash import html, Dash, dcc
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
 from business_layer.dao.dbgameshandler import DBGamesHandler
 from business_layer.service.other.utils import Utils
+
+import dash_bootstrap_components as dbc
+from dash import Dash, dcc, html
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 class Graph:
     """
@@ -68,36 +70,86 @@ class Graph:
             self.indicators_explain[indicateur] = details["explication"]
 
     def display_graph(self):
-        """
-        Display a polar graph comparing player's performance against others in the same rank tier.
-
-        This method creates and displays an interactive polar graph using the Dash framework. 
-        The graph visualizes various in-game performance indicators for the player and compares them with the average values of others in the same rank tier.
-        """
-        app = Dash(__name__)
+        app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
-        
+
         r_values_player = list(self.indicators_players.values())
         theta_values_player = list(self.indicators_players.keys())
         r_values_player.append(r_values_player[0])
         theta_values_player.append(theta_values_player[0])
-        fig_player = go.Scatterpolar(r=r_values_player, theta=theta_values_player, fill='toself', name=f"{self.pseudo}")
+        fig_player = go.Scatterpolar(
+            r=r_values_player, 
+            theta=theta_values_player, 
+            fill='toself', 
+            name=f"{self.pseudo}",
+            line=dict(color='#1f77b4')
+        )
         fig.add_trace(fig_player)
 
         r_values_others = list(self.indicators_others.values())
         theta_values_others = list(self.indicators_others.keys())
         r_values_others.append(r_values_others[0])
         theta_values_others.append(theta_values_others[0])
-        fig_others = go.Scatterpolar(r=r_values_others, theta=theta_values_others, fill='toself', name=self.rank)
+        fig_others = go.Scatterpolar(
+            r=r_values_others, 
+            theta=theta_values_others, 
+            fill='toself', 
+            name=self.rank,
+            line=dict(color='#ff7f0e')
+        )
         fig.add_trace(fig_others)
-        
-        app.layout = html.Div([
-            html.H1(f"Analyse des performances de {self.pseudo} pour le {self.poste}", style={"textAlign": "center"}),
-            dcc.Graph(id="graph", figure=fig),
-            html.Ul([html.Li(f"{key} : {val}") for key, val in self.indicators_explain.items()])
-        ])
+
+        indicators_cards = dbc.Accordion( [
+            dbc.AccordionItem(
+                title=f'{key} : {val["explication"]}',
+                children=[
+                    html.P(val["longer_explication"])
+                ]
+            )
+            for key, val in self.indicators.items()
+        ]
+        )
+
+        app.layout = dbc.Container([
+            dbc.Row([
+                dbc.Col(html.H1("GameGenius", className="custom-title"), width=12)
+            ]),
+            dbc.Row([
+                dbc.Col(html.H2(f"{self.poste} performance for {self.pseudo}", className="custom-subtitle"), width=12)
+            ]),
+            dbc.Row([
+                dbc.Col(dcc.Graph(id="graph", figure=fig, className="custom-graph-container"), width=6),
+                dbc.Col(indicators_cards, width=6)
+            ])
+        ], fluid=True)
+
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white', 
+            font=dict(
+                color='#333',
+                family='Roboto, sans-serif',
+                size=12
+            ),
+            polar=dict(
+                bgcolor="white", 
+                radialaxis=dict(
+                    linecolor="#cccccc", 
+                    gridcolor="#e6e6e6"  
+                ),
+                angularaxis=dict(
+                    linecolor="#cccccc",
+                    gridcolor="#e6e6e6"  
+                )
+            ),
+            legend=dict(
+                bgcolor="rgba(255, 255, 255, 0.8)", 
+                font=dict(
+                    color="#333"
+                )
+            )
+        )
 
         app.run_server()
-
-
+        
