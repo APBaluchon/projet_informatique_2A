@@ -7,6 +7,7 @@ from business_layer.service.graphs.supportgraph import SupportGraph
 from business_layer.service.graphs.adcgraph import AdcGraph
 from business_layer.controler.userview import UserView
 
+
 class User(UserBase):
     """
     A class representing a regular user, inheriting from UserBase.
@@ -22,6 +23,7 @@ class User(UserBase):
         This method allows a regular user to perform a series of actions, such as
         accessing different types of graphical representations or user-specific views.
         """
+        UserView().clear_screen()
         action = UserView().ask_action()
 
         if action == UserView().actions_dict["1"]:

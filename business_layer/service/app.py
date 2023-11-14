@@ -34,7 +34,6 @@ class App:
         This method first clears the screen, then asks the user for their pseudo. It checks
         if the pseudo exists in the database. If it exists, its asks for the password, if it doesn't, its creates a new user.
         """
-        GuestView().clear_screen()
         
         self.pseudo = GuestView().ask_pseudo()
 
@@ -54,7 +53,6 @@ class App:
         If the password is incorrect, it informs the user and asks for the password again. 
         This process repeats until the correct password is entered.
         """
-        GuestView().clear_screen()
         self.password = GuestView().ask_password()
 
         while not DBHandler().is_password_correct(self.pseudo, self.password):
@@ -85,6 +83,7 @@ class App:
         the process of user authentication.
         """
         GuestView().clear_screen()
+        print(GuestView().display_app_name())
         return self.ask_for_pseudo()
 
 

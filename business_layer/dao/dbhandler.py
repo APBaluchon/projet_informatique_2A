@@ -241,7 +241,6 @@ class DBHandler(metaclass=Singleton):
             True is account has beed created, otherwise False.
         """
         try:
-            DBView().clear_screen()
             password = DBView().ask_password_new_account()
 
             if self.is_user_in_db(pseudo):

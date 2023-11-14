@@ -26,38 +26,33 @@ class AdcGraph(Graph):
 
         Calls the initialization of the parent Graph class with the pseudo and the specific
         role 'BOTTOM', and sets up indicators specific to the ADC role.
-
-        Parameters
-        ----------
-        pseudo : str
-            The pseudo of the player for whom the graph is being generated.
         """
         super().__init__(pseudo, "BOTTOM")
         self.indicators = {
             "🏹": {
                 "formule": lambda df: (df["totaldamagedealttochampions"] / df["gameduration"]) * 60, 
                 "max": 2000, 
-                "explication": "Dommages par Minute aux Champions"
+                "explication": "Damage per Minute to Champions"
             },
             "🌾": {
                 "formule": lambda df: (df["totalminionskilled"] / df["gameduration"]) * 60, 
                 "max": 10, 
-                "explication": "CS par Minute"
+                "explication": "Creeper Score per Minute"
             },
             "☠️": {
                 "formule": lambda df: (df["kills"] + df["assists"]) / (df["deaths"] + 1), 
                 "max": 10, 
-                "explication": "Efficacité des Combats (Kills + Assists / Deaths)"
+                "explication": "Fight Efficiency (Kills + Assists / Deaths)"
             },
             "🎯": {
                 "formule": lambda df: df["turretkills"], 
                 "max": 10,
-                "explication": "Objectifs Pris (Tours détruits)"
+                "explication": "Objectives Taken (Towers destroyed)"
             },
             "💰": {
                 "formule": lambda df: (df["goldearned"] / df["gameduration"]) * 60, 
                 "max": 800, 
-                "explication": "Gold par Minute"
+                "explication": "Gold per Minute"
             }
         }
         self.calculate_indicators_players()
