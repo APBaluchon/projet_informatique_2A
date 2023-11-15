@@ -14,7 +14,7 @@ class Admin(UserBase):
         displaying the database or other admin-specific tasks.
         """
         AdminView().clear_screen()
-        action = AdminView().ask_choice()
+        action = AdminView().ask_action()
 
         if action == AdminView().actions_dict["1"]:
             DBHandler().display_database()

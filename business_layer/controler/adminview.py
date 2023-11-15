@@ -87,4 +87,4 @@ class AdminView(View):
         str
             The chosen action.
         """
-        return super().get_list_input("Select an action: ", AdminView().actions_dict.values())
+        return super().get_list_input("Select an action: ", AdminView().choix_dict.values())

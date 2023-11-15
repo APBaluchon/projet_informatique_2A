@@ -32,27 +32,32 @@ class TopGraph(Graph):
             "🏹": {
                 "formule": lambda df: (df["totaldamagedealttochampions"] / df["gameduration"]) * 60, 
                 "max": 2000, 
-                "explication": "Damage per Minute to Champions"
+                "explication": "Damage per Minute to Champions",
+                "longer_explication": "This indicator measures the amount of damage dealt to enemy champions per minute. It is calculated by dividing the total damage dealt to champions by the game duration and multiplying by 60.",
             },
             "🌾": {
                 "formule": lambda df: (df["totalminionskilled"] / df["gameduration"]) * 60, 
                 "max": 10, 
-                "explication": "Creeper Score per Minute"
+                "explication": "Creeper Score per Minute",
+                "longer_explication": "This indicator measures the number of minions killed per minute. It is calculated by dividing the total number of minions killed by the game duration and multiplying by 60.",
             },
             "☠️": {
                 "formule": lambda df: (df["kills"] + df["assists"]) / (df["deaths"] + 1), 
                 "max": 10, 
-                "explication": "Fight Efficiency (Kills + Assists / Deaths)"
+                "explication": "Fight Efficiency (Kills + Assists / Deaths)",
+                "longer_explication": "This indicator measures the player's efficiency in fights. It is calculated by adding the number of kills and assists and dividing by the number of deaths plus one.",
             },
             "🎯": {
                 "formule": lambda df: df["resultat"], 
                 "max": 1,
-                "explication": "Winrate"
+                "explication": "Winrate",
+                "longer_explication": "This indicator measures the player's win rate. It is calculated by dividing the number of games won by the total number of games played.",
             },
             "🤝": {
                 "formule": lambda df: (df["kills"] / df["teamkills"]) , 
-                "max": 800, 
-                "explication": "Kill participation"
+                "max": 1, 
+                "explication": "Kill participation",
+                "longer_explication": "This indicator measures the player's participation in team kills. It is calculated by dividing the number of kills the player participated in by the total number of team kills.",
             }
         }
         self.calculate_indicators_players()

@@ -2,7 +2,7 @@ from business_layer.service.users.userbase import UserBase
 from business_layer.dao.dbgameshandler import DBGamesHandler
 from business_layer.service.graphs.topgraph import TopGraph
 from business_layer.service.graphs.junglergraph import JunglerGraph
-from business_layer.service.graphs.midgraph import  MidGraph
+from business_layer.service.graphs.midgraph import MidGraph
 from business_layer.service.graphs.supportgraph import SupportGraph
 from business_layer.service.graphs.adcgraph import AdcGraph
 from business_layer.controler.userview import UserView

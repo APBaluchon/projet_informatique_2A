@@ -48,6 +48,7 @@ class DBGamesHandler(metaclass=Singleton):
                 for game in last_games:
                     if not self.is_game_in_database(player_puuid, game):
                         self.add_game_information_to_database(player_puuid, game)
+            AdminView().clear_screen()
         except Exception as e:
             print(f"Error updating database games for {pseudo}: {e}")
 
@@ -351,7 +352,7 @@ class DBGamesHandler(metaclass=Singleton):
         """
         Prompt the user to choose an action for adding games to the database.
         """
-        action = AdminView().ask_action()
+        action = AdminView().ask_choice()
         if action == AdminView().choix_dict["1"]:
             self.add_games_to_database_from_one_player()
         elif action == AdminView().choix_dict["2"]:
@@ -383,7 +384,7 @@ class DBGamesHandler(metaclass=Singleton):
         response = requests.get(url, params=DBGamesHandler.params)
 
         if response.status_code == 200:
-            players = response.json()
+            players = response.json()[:50]
             total_players = len(players)
             with tqdm(total=total_players) as pbar:
                 for player in players:
