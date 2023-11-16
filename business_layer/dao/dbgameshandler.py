@@ -161,7 +161,7 @@ class DBGamesHandler(metaclass=Singleton):
             query = """
                 SELECT *
                 FROM projet_info.games g
-                WHERE g.puuid = %s AND g.poste = %s
+                WHERE g.puuid = %s AND g.teamposition = %s
             """
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -193,7 +193,7 @@ class DBGamesHandler(metaclass=Singleton):
                 SELECT *
                 FROM projet_info.games g 
                 JOIN projet_info.players p ON g.puuid = p.puuid
-                WHERE g.poste = %s AND p.rang = %s
+                WHERE g.teamposition = %s AND p.rang = %s
             """
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -239,7 +239,7 @@ class DBGamesHandler(metaclass=Singleton):
                         riotIdTagline, sightWardsBoughtInGame, spell1Casts, 
                         spell2Casts, spell3Casts, spell4Casts, summoner1Casts, 
                         summoner1Id, summoner2Casts, summoner2Id, teamEarlySurrendered, teamId, 
-                        teamPosition, timeCCingOthers, timePlayed, totalDamageDealt, 
+                        teamKills, teamPosition, timeCCingOthers, timePlayed, totalDamageDealt, 
                         totalDamageDealtToChampions, totalDamageShieldedOnTeammates, 
                         totalDamageTaken, totalHeal, totalHealsOnTeammates, totalMinionsKilled, 
                         totalTimeCCDealt, totalTimeSpentDead, totalUnitsHealed, tripleKills, 
@@ -254,7 +254,7 @@ class DBGamesHandler(metaclass=Singleton):
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s
+                        %s, %s, %s, %s, %s, %s, %s, %s
                     )
                 """
                 with DBConnection().connection as connection:
@@ -278,7 +278,7 @@ class DBGamesHandler(metaclass=Singleton):
                             infos["riotIdTagline"], infos["sightWardsBoughtInGame"], infos["spell1Casts"], 
                             infos["spell2Casts"], infos["spell3Casts"], infos["spell4Casts"], infos["summoner1Casts"], 
                             infos["summoner1Id"], infos["summoner2Casts"], infos["summoner2Id"], infos["teamEarlySurrendered"], infos["teamId"], 
-                            infos["teamPosition"], infos["timeCCingOthers"], infos["timePlayed"], infos["totalDamageDealt"], 
+                            infos["teamKills"], infos["teamPosition"], infos["timeCCingOthers"], infos["timePlayed"], infos["totalDamageDealt"], 
                             infos["totalDamageDealtToChampions"], infos["totalDamageShieldedOnTeammates"], 
                             infos["totalDamageTaken"], infos["totalHeal"], infos["totalHealsOnTeammates"], infos["totalMinionsKilled"], 
                             infos["totalTimeCCDealt"], infos["totalTimeSpentDead"], infos["totalUnitsHealed"], infos["tripleKills"], 
@@ -394,6 +394,7 @@ class DBGamesHandler(metaclass=Singleton):
             "summoner2Id": info_about_player.get("summoner2Id", 0),
             "teamEarlySurrendered": info_about_player.get("teamEarlySurrendered", False),
             "teamId": info_about_player.get("teamId", 0),
+            "teamKills": sum([p["kills"] for p in response["info"]["participants"]]),
             "teamPosition": info_about_player.get("teamPosition", ""),
             "timeCCingOthers": info_about_player.get("timeCCingOthers", 0),
             "timePlayed": info_about_player.get("timePlayed", 0),

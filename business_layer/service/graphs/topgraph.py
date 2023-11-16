@@ -29,35 +29,35 @@ class TopGraph(Graph):
         """
         super().__init__(pseudo, "TOP")
         self.indicators = {
-            "🏹": {
-                "formule": lambda df: (df["totaldamagedealttochampions"] / df["gameduration"]) * 60, 
-                "max": 2000, 
-                "explication": "Damage per Minute to Champions",
-                "longer_explication": "This indicator measures the amount of damage dealt to enemy champions per minute. It is calculated by dividing the total damage dealt to champions by the game duration and multiplying by 60.",
+            "🏰": {
+                "formule": lambda df: (df["damagedealttoturrets"] / df["gameduration"]) * 60, 
+                "max": 500, 
+                "explication": "Damage to Turrets per Minute",
+                "longer_explication": "This measures the average damage dealt to enemy turrets per minute, indicating the top laner's ability to pressure lanes and contribute to objective control. It's calculated by dividing the total damage dealt to turrets by the total game duration in minutes."
+            },
+            "🛡️": {
+                "formule": lambda df: (df["totaldamagetaken"] / df["gameduration"]) * 60, 
+                "max": 1000, 
+                "explication": "Damage Take per Minute",
+                "longer_explication": "Reflects the average amount of damage absorbed by the top laner per minute, demonstrating their ability to engage in fights and sustain damage. Calculated by dividing the total damage taken by the game duration in minutes."
             },
             "🌾": {
                 "formule": lambda df: (df["totalminionskilled"] / df["gameduration"]) * 60, 
                 "max": 10, 
-                "explication": "Creeper Score per Minute",
-                "longer_explication": "This indicator measures the number of minions killed per minute. It is calculated by dividing the total number of minions killed by the game duration and multiplying by 60.",
+                "explication": "Minions Killed per Minute",
+                "longer_explication": "Indicates the top laner's efficiency in farming minions per minute. Higher numbers show better lane control and farming skills. It's the total minions killed divided by the game duration in minutes.",
             },
-            "☠️": {
-                "formule": lambda df: (df["kills"] + df["assists"]) / (df["deaths"] + 1), 
-                "max": 10, 
-                "explication": "Fight Efficiency (Kills + Assists / Deaths)",
-                "longer_explication": "This indicator measures the player's efficiency in fights. It is calculated by adding the number of kills and assists and dividing by the number of deaths plus one.",
+            "⚔️": {
+                "formule": lambda df: (df["kills"]+df["assists"])/(df["deaths"]+1), 
+                "max": 10,
+                "explication": "KDA Ratio",
+                "longer_explication": "A metric to evaluate combat performance, balancing kills and assists against deaths. A higher KDA suggests better survival and combat contribution. Calculated as (Kills + Assists) divided by (Deaths + 1) to avoid infinity when deaths are zero.",
             },
-            "🎯": {
-                "formule": lambda df: df["resultat"], 
-                "max": 1,
-                "explication": "Winrate",
-                "longer_explication": "This indicator measures the player's win rate. It is calculated by dividing the number of games won by the total number of games played.",
-            },
-            "🤝": {
-                "formule": lambda df: (df["kills"] / df["teamkills"]) , 
+            "👁️": {
+                "formule": lambda df: (df["wardsplaced"] / df["gameduration"]) * 60 , 
                 "max": 1, 
-                "explication": "Kill participation",
-                "longer_explication": "This indicator measures the player's participation in team kills. It is calculated by dividing the number of kills the player participated in by the total number of team kills.",
+                "explication": "Wards Placed per Minute",
+                "longer_explication": "Measures the average number of wards placed per minute, reflecting the player's contribution to team vision and map awareness. Calculated by dividing total wards placed by the game duration in minutes.",
             }
         }
         self.calculate_indicators_players()

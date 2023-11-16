@@ -44,6 +44,10 @@ class Graph:
         self.pseudo = pseudo
         self.poste = poste
         self.rank = rank
+        self.df = None
+        self.df_means = None
+        self.df_others = None
+        self.df_others_means = None
         self.indicators = dict()
         self.indicators_players = dict()
         self.indicators_others = dict()
@@ -61,12 +65,12 @@ class Graph:
         self.rank = DBGamesHandler().get_player_rank(self.pseudo)
         datas = DBGamesHandler().get_games_for_one_position(player_puuid, self.poste)
         datas_others = DBGamesHandler().get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
-        df, df_means = Utils().convert_datas_to_dataframe(datas)
-        df_others, df_others_means = Utils().convert_datas_to_dataframe(datas_others)
+        self.df, self.df_means = Utils().convert_datas_to_dataframe(datas)
+        self.df_others, self.df_others_means = Utils().convert_datas_to_dataframe(datas_others)
 
         for indicateur, details in self.indicators.items():
-            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df_means), 0, details["max"])
-            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](df_others_means), 0, details["max"])
+            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](self.df_means), 0, details["max"])
+            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](self.df_others_means), 0, details["max"])
             self.indicators_explain[indicateur] = details["explication"]
 
     def display_graph(self):
@@ -108,8 +112,35 @@ class Graph:
                 ]
             )
             for key, val in self.indicators.items()
-        ]
+        ], className = "custom-card"
         )
+
+        carousel_items = []
+        for index, game in self.df.iterrows():
+            kda = round((game["kills"] + game["assists"]) / game["deaths"], 1) if game["deaths"] != 0 else "Perfect"
+            if(game["matchid"] == ""):
+                continue
+            if game["win"]:
+                overlay_color = "rgba(50, 255, 100, 0.4)"
+            else:
+                overlay_color = "rgba(255, 50, 100, 0.4)"
+            carousel_items.append(
+                html.Div([
+                    dbc.Card([
+                        dbc.CardBody([
+                            html.Img(src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game['championname']}.png", className="custom-card-img"),
+                            html.Hr(),
+                            html.H5(f'{game["championname"]}', style = {"text-font": "bold"}),
+                            html.P(f'{game["kills"]}/{game["deaths"]}/{game["assists"]}'),
+                            html.P(f'({kda}  KDA)', style = {"font-size": "0.8rem",
+                                                            "padding-top": "-30px"}),
+                        ], style = {"text-align": "center",
+                                    "background-color": overlay_color,
+                                    "width": "150px"}),
+                    ])
+                ])
+            )
+        carousel = html.Div(carousel_items, className = "carousel")
 
         app.layout = dbc.Container([
             dbc.Row([
@@ -121,8 +152,9 @@ class Graph:
             dbc.Row([
                 dbc.Col(dcc.Graph(id="graph", figure=fig, className="custom-graph-container"), width=6),
                 dbc.Col(indicators_cards, width=6)
-            ])
-        ], fluid=True)
+            ]),
+            dbc.Row(html.Div(carousel))
+        ])
 
         fig.update_layout(
             plot_bgcolor='white',

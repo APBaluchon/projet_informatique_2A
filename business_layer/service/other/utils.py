@@ -52,7 +52,8 @@ class Utils:
         pandas.DataFrame
             The resulting DataFrame.
         """
-        df = pd.DataFrame(datas)    
+        df = pd.DataFrame(datas)
+        df.drop(df[df['matchid'] == ''].index, inplace=True)
         df.loc['moyenne'] = df.select_dtypes(np.number).mean()
         df.loc['moyenne', df.select_dtypes('object').columns] = ''
 
