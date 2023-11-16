@@ -56,4 +56,4 @@ class Utils:
         df.loc['moyenne'] = df.select_dtypes(np.number).mean()
         df.loc['moyenne', df.select_dtypes('object').columns] = ''
 
-        return df.iloc[-1]
+        return df, df.iloc[-1]

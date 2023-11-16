@@ -61,12 +61,12 @@ class Graph:
         self.rank = DBGamesHandler().get_player_rank(self.pseudo)
         datas = DBGamesHandler().get_games_for_one_position(player_puuid, self.poste)
         datas_others = DBGamesHandler().get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
-        df = Utils().convert_datas_to_dataframe(datas)
-        df_others = Utils().convert_datas_to_dataframe(datas_others)
+        df, df_means = Utils().convert_datas_to_dataframe(datas)
+        df_others, df_others_means = Utils().convert_datas_to_dataframe(datas_others)
 
         for indicateur, details in self.indicators.items():
-            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df), 0, details["max"])
-            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](df_others), 0, details["max"])
+            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df_means), 0, details["max"])
+            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](df_others_means), 0, details["max"])
             self.indicators_explain[indicateur] = details["explication"]
 
     def display_graph(self):
