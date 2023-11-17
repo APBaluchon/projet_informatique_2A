@@ -15,7 +15,7 @@ class DBGamesHandler(metaclass=Singleton):
         A dictionary containing the API key.
     """
     params = {
-        "api_key" : "RGAPI-fce0bb0b-71ec-4b72-b1a1-c99ec7c8d038"
+        "api_key" : "RGAPI-576441aa-a082-4d07-b7fd-1eaafe053b73"
     }
 
     def update_database_games(self, pseudo, start=0, count=60, show_progress_bar=True):
