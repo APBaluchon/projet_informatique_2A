@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+from dash_bootstrap_templates import load_figure_template
 
 
 class Graph:
@@ -52,6 +53,7 @@ class Graph:
     """
     def __init__(self, pseudo, poste, rank = None):
         self.caroussel = None
+        self.datas_board = None
         self.games_player = None
         self.games_other = None
         self.pseudo = pseudo
@@ -100,8 +102,7 @@ class Graph:
             r=r_values_player, 
             theta=theta_values_player, 
             fill='toself', 
-            name=f"{self.pseudo}",
-            line=dict(color='#1f77b4')
+            name=f"{self.pseudo}"
         )
         self.fig.add_trace(fig_player)
 
@@ -113,8 +114,7 @@ class Graph:
             r=r_values_others, 
             theta=theta_values_others, 
             fill='toself', 
-            name=self.rank,
-            line=dict(color='#ff7f0e')
+            name=self.rank
         )
         self.fig.add_trace(fig_others)
 
@@ -130,94 +130,79 @@ class Graph:
                 ]
             )
             for key, val in self.indicators.items()
-        ], className = "custom-card"
-        )
+        ])
 
     def create_carousel(self):
         """
-        Create a carousel to display the player's games.
+        Create a carousel to display the player's games horizontally with consistent image sizes.
         """
         carousel_items = []
         for game in self.games_player:
-            kda = round((game.get_kills() + game.get_assists()) / game.get_deaths(), 1) if game.get_deaths() != 0 else "Perfect"
-            if(game.get_matchid() == ""):
+            if game.get_matchid() == "":
                 continue
-            if game.get_win():
-                overlay_color = "rgba(50, 255, 100, 0.4)"
-            else:
-                overlay_color = "rgba(255, 50, 100, 0.4)"
-            carousel_items.append(
-                html.Div([
-                    dbc.Button(
-                        dbc.Card(
-                            dbc.CardBody([
-                                html.Img(src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game.get_championname()}.png", className="custom-card-img"),
-                                html.Hr(),
-                                html.P(f'{game.get_kills()}/{game.get_deaths()}/{game.get_assists()}'),
-                            ]),
-                            style={"text-align": "center", "background-color": overlay_color, "width": "150px"}
-                        ),
-                        color="link",
-                        className="custom-button",
-                        id=f"details-button-{game.get_matchid()}",
-                        n_clicks=0
-                    )
-                ])
-            )
-        self.carousel = html.Div(carousel_items, className = "carousel")
-        
 
+            color = "rgba(50, 255, 100, 0.4)" if game.get_win() else "rgba(255, 50, 100, 0.4)"
+            card_item = html.Div([
+                dbc.Button(
+                    dbc.Card([
+                        dbc.CardImg(
+                            src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game.get_championname()}.png", 
+                            className="custom-card-img",
+                            style={"width": "100px", "height": "100px", "object-fit": "cover"}  # Fixed size and object-fit style
+                        ),
+                        dbc.CardBody([
+                            html.P(f'{game.get_kills()}/{game.get_deaths()}/{game.get_assists()}'),
+                        ])
+                    ]),
+                    color="link",
+                    id=f"details-button-{game.get_matchid()}",
+                    n_clicks=0
+                )
+            ], style={"display": "inline-block", "margin": "5px"})
+
+            carousel_items.append(card_item)
+
+        self.carousel = html.Div(carousel_items, style={"display": "flex", "overflowX": "auto"})
+
+
+    # function to display all informations about a game the user will click on a button
+    def create_datas_board(self):
+        datas_board = dbc.Card([
+            dbc.CardBody(
+                html.H1("GameGenius")
+            )
+        ])
+
+        self.datas_board = html.Div(datas_board)
+        
     def display_graph(self):
         """
         Display the graph in a Dash application.
         """
-        app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+        app = Dash(__name__, external_stylesheets=[dbc.themes.VAPOR])
+        load_figure_template("VAPOR")
 
         self.fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
         self.create_circular_graph()
         self.create_accordion()
         self.create_carousel()
+        self.create_datas_board()
 
         app.layout = dbc.Container([
             dbc.Row([
-                dbc.Col(html.H1("GameGenius", className="custom-title"), width=12)
+                dbc.Col(html.H1("GameGenius"), className = "title", width=12)
             ]),
             dbc.Row([
-                dbc.Col(html.H2(f"{self.poste} performance for {self.pseudo}", className="custom-subtitle"), width=12)
+                dbc.Col(html.H2(f"{self.poste} performance for {self.pseudo}", className = "subtitle"), width=12)
             ]),
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph", figure=self.fig, className="custom-graph-container"), width=6),
+                dbc.Col(dcc.Graph(id="graph", figure=self.fig), className = "graph-container", width=6),
                 dbc.Col(self.indicators_cards, width=6)
             ]),
-            dbc.Row(html.Div(self.carousel))
-        ])
-
-        self.fig.update_layout(
-            plot_bgcolor='white',
-            paper_bgcolor='white', 
-            font=dict(
-                color='#333',
-                family='Roboto, sans-serif',
-                size=12
-            ),
-            polar=dict(
-                bgcolor="white", 
-                radialaxis=dict(
-                    linecolor="#cccccc", 
-                    gridcolor="#e6e6e6"  
-                ),
-                angularaxis=dict(
-                    linecolor="#cccccc",
-                    gridcolor="#e6e6e6"  
-                )
-            ),
-            legend=dict(
-                bgcolor="rgba(255, 255, 255, 0.8)", 
-                font=dict(
-                    color="#333"
-                )
+            dbc.Row(
+                dbc.Col(html.Div(self.carousel), width=12)
             )
-        )
+        ])
 
         app.run_server()
         
