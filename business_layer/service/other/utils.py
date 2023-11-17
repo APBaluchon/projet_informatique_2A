@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from business_layer.service.game.game import Game
 
 
 class Utils:
@@ -58,3 +59,35 @@ class Utils:
         df_mean = df.select_dtypes(np.number).mean()
 
         return df, df_mean
+
+    def convert_dataframe_to_game_list(self, df):
+        """
+        Convert a pandas DataFrame to a list of Game objects.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame to convert.
+
+        Returns
+        -------
+        list of Game
+            The resulting list of Game objects.
+        """
+        return [Game(row) for i, row in df.iterrows()]
+
+    def convert_series_to_game(self, series):
+        """
+        Convert a pandas Series to a Game object.
+
+        Parameters
+        ----------
+        series : pandas.Series
+            The Series to convert.
+        
+        Returns
+        -------
+        Game
+            The resulting Game object.
+        """
+        return Game(series.to_dict())

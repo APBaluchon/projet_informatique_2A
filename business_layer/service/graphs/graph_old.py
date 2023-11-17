@@ -6,6 +6,7 @@ from dash import Dash, dcc, html
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
+
 class Graph:
 
     def __init__(self, pseudo, poste, rank = None):

@@ -1,12 +1,10 @@
-import pandas as pd
-import numpy as np
 from business_layer.dao.dbgameshandler import DBGamesHandler
 from business_layer.service.other.utils import Utils
-
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+
 
 class Graph:
     """
@@ -16,20 +14,32 @@ class Graph:
 
     Attributes
     ----------
+    caroussel : dash_core_components.Carousel
+        The carousel containing the player's games.
+    games_player : list of Game
+        The list of games played by the player.
+    games_other : list of Game
+        The list of games played by other players in the same rank tier.
     pseudo : str
-        The pseudo of the user for which the graph is being created.
+        The pseudo of the player for whom the graph is being generated.
     poste : str
-        The in-game position to analyze
-    rank : str, optional
-        The rank of the player to analyze
+        The specific in-game position for which the graph is being created.
+    rank : str 
+        The rank of the player.
+    fig : plotly.graph_objs._figure.Figure
+        The figure containing the graph.
     indicators : dict
-        A dictionary to store various indicators for the graph about the player.
+        A dictionary mapping indicator symbols to their respective formulas and explanations.
+        Each indicator represents a specific metric relevant to the player's role, such as
+        damage per minute or minions killed.
+    indicators_cards : dash_bootstrap_components.Accordion
+        The accordion containing the explanations for the indicators.
     indicators_players : dict
-        A dictionary to store indicators values for player.
+        A dictionary mapping indicator symbols to their respective values for the player.
     indicators_others : dict
-        A dictionary to store indicators values for tier of the player.
+        A dictionary mapping indicator symbols to their respective values for other players in the same rank tier.
     indicators_explain : dict
-        A dictionary to store explanations of items in indicators.
+        A dictionary mapping indicator symbols to their respective explanations.
 
     Parameters
     ----------
@@ -41,14 +51,15 @@ class Graph:
         The rank of the player.
     """
     def __init__(self, pseudo, poste, rank = None):
+        self.caroussel = None
+        self.games_player = None
+        self.games_other = None
         self.pseudo = pseudo
         self.poste = poste
         self.rank = rank
-        self.df = None
-        self.df_means = None
-        self.df_others = None
-        self.df_others_means = None
+        self.fig = None
         self.indicators = dict()
+        self.indicators_cards = None
         self.indicators_players = dict()
         self.indicators_others = dict()
         self.indicators_explain = dict()
@@ -65,19 +76,22 @@ class Graph:
         self.rank = DBGamesHandler().get_player_rank(self.pseudo)
         datas = DBGamesHandler().get_games_for_one_position(player_puuid, self.poste)
         datas_others = DBGamesHandler().get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
-        self.df, self.df_means = Utils().convert_datas_to_dataframe(datas)
-        self.df_others, self.df_others_means = Utils().convert_datas_to_dataframe(datas_others)
+
+        df, df_means = Utils().convert_datas_to_dataframe(datas)
+        self.games_player = Utils().convert_dataframe_to_game_list(df)
+
+        df_others, df_others_means = Utils().convert_datas_to_dataframe(datas_others)
+        self.games_other = Utils().convert_dataframe_to_game_list(df_others)
 
         for indicateur, details in self.indicators.items():
-            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](self.df_means), 0, details["max"])
-            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](self.df_others_means), 0, details["max"])
+            self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df_means), 0, details["max"])
+            self.indicators_others[indicateur] = Utils().interpolate(details["formule"](df_others_means), 0, details["max"])
             self.indicators_explain[indicateur] = details["explication"]
 
-    def display_graph(self):
-        app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
-        fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
-
+    def create_circular_graph(self):
+        """
+        Create a circular graph based on the indicators for the player and others in their rank tier.
+        """
         r_values_player = list(self.indicators_players.values())
         theta_values_player = list(self.indicators_players.keys())
         r_values_player.append(r_values_player[0])
@@ -89,7 +103,7 @@ class Graph:
             name=f"{self.pseudo}",
             line=dict(color='#1f77b4')
         )
-        fig.add_trace(fig_player)
+        self.fig.add_trace(fig_player)
 
         r_values_others = list(self.indicators_others.values())
         theta_values_others = list(self.indicators_others.keys())
@@ -102,9 +116,13 @@ class Graph:
             name=self.rank,
             line=dict(color='#ff7f0e')
         )
-        fig.add_trace(fig_others)
+        self.fig.add_trace(fig_others)
 
-        indicators_cards = dbc.Accordion( [
+    def create_accordion(self):
+        """
+        Create an accordion to display explanations for the indicators.
+        """
+        self.indicators_cards = dbc.Accordion( [
             dbc.AccordionItem(
                 title=f'{key} : {val["explication"]}',
                 children=[
@@ -115,32 +133,50 @@ class Graph:
         ], className = "custom-card"
         )
 
+    def create_carousel(self):
+        """
+        Create a carousel to display the player's games.
+        """
         carousel_items = []
-        for index, game in self.df.iterrows():
-            kda = round((game["kills"] + game["assists"]) / game["deaths"], 1) if game["deaths"] != 0 else "Perfect"
-            if(game["matchid"] == ""):
+        for game in self.games_player:
+            kda = round((game.get_kills() + game.get_assists()) / game.get_deaths(), 1) if game.get_deaths() != 0 else "Perfect"
+            if(game.get_matchid() == ""):
                 continue
-            if game["win"]:
+            if game.get_win():
                 overlay_color = "rgba(50, 255, 100, 0.4)"
             else:
                 overlay_color = "rgba(255, 50, 100, 0.4)"
             carousel_items.append(
                 html.Div([
-                    dbc.Card([
-                        dbc.CardBody([
-                            html.Img(src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game['championname']}.png", className="custom-card-img"),
-                            html.Hr(),
-                            html.H5(f'{game["championname"]}', style = {"text-font": "bold"}),
-                            html.P(f'{game["kills"]}/{game["deaths"]}/{game["assists"]}'),
-                            html.P(f'({kda}  KDA)', style = {"font-size": "0.8rem",
-                                                            "padding-top": "-30px"}),
-                        ], style = {"text-align": "center",
-                                    "background-color": overlay_color,
-                                    "width": "150px"}),
-                    ])
+                    dbc.Button(
+                        dbc.Card(
+                            dbc.CardBody([
+                                html.Img(src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game.get_championname()}.png", className="custom-card-img"),
+                                html.Hr(),
+                                html.P(f'{game.get_kills()}/{game.get_deaths()}/{game.get_assists()}'),
+                            ]),
+                            style={"text-align": "center", "background-color": overlay_color, "width": "150px"}
+                        ),
+                        color="link",
+                        className="custom-button",
+                        id=f"details-button-{game.get_matchid()}",
+                        n_clicks=0
+                    )
                 ])
             )
-        carousel = html.Div(carousel_items, className = "carousel")
+        self.carousel = html.Div(carousel_items, className = "carousel")
+        
+
+    def display_graph(self):
+        """
+        Display the graph in a Dash application.
+        """
+        app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+        self.fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'polar'}]])
+        self.create_circular_graph()
+        self.create_accordion()
+        self.create_carousel()
 
         app.layout = dbc.Container([
             dbc.Row([
@@ -150,13 +186,13 @@ class Graph:
                 dbc.Col(html.H2(f"{self.poste} performance for {self.pseudo}", className="custom-subtitle"), width=12)
             ]),
             dbc.Row([
-                dbc.Col(dcc.Graph(id="graph", figure=fig, className="custom-graph-container"), width=6),
-                dbc.Col(indicators_cards, width=6)
+                dbc.Col(dcc.Graph(id="graph", figure=self.fig, className="custom-graph-container"), width=6),
+                dbc.Col(self.indicators_cards, width=6)
             ]),
-            dbc.Row(html.Div(carousel))
+            dbc.Row(html.Div(self.carousel))
         ])
 
-        fig.update_layout(
+        self.fig.update_layout(
             plot_bgcolor='white',
             paper_bgcolor='white', 
             font=dict(

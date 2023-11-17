@@ -63,3 +63,22 @@ body {
   opacity: 0.5;
 }
 
+.custom-button {
+  color: #fff;
+  border: none;
+  padding: 0px 0px;
+  border-radius: 5px;
+  font-size: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.custom-button:hover {
+  background-color: #999;
+}
+
+.custom-button:focus {
+  outline: none;
+  box-shadow: none;
+}

@@ -63,3 +63,6 @@ class AdcGraph(Graph):
         self.calculate_indicators_players()
         self.display_graph()
 
+
+if __name__ == "__main__":
+    AdcGraph("SlolyS")
