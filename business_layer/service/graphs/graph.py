@@ -52,6 +52,7 @@ class Graph:
         The rank of the player.
     """
     def __init__(self, pseudo, poste, rank = None):
+        self.actual_game = None
         self.caroussel = None
         self.datas_board = None
         self.games_player = None
@@ -84,6 +85,8 @@ class Graph:
 
         df_others, df_others_means = Utils().convert_datas_to_dataframe(datas_others)
         self.games_other = Utils().convert_dataframe_to_game_list(df_others)
+
+        self.actual_game = self.games_player[0]
 
         for indicateur, details in self.indicators.items():
             self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df_means), 0, details["max"])
@@ -133,22 +136,20 @@ class Graph:
         ])
 
     def create_carousel(self):
-        """
-        Create a carousel to display the player's games horizontally with consistent image sizes.
-        """
         carousel_items = []
         for game in self.games_player:
             if game.get_matchid() == "":
                 continue
 
-            color = "rgba(50, 255, 100, 0.4)" if game.get_win() else "rgba(255, 50, 100, 0.4)"
+            button_class = "game-button-loss" if not game.get_win() else "game-button"
+
             card_item = html.Div([
                 dbc.Button(
                     dbc.Card([
                         dbc.CardImg(
                             src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{game.get_championname()}.png", 
                             className="custom-card-img",
-                            style={"width": "100px", "height": "100px", "object-fit": "cover"}  # Fixed size and object-fit style
+                            style={"width": "100px", "height": "100px", "object-fit": "cover"}
                         ),
                         dbc.CardBody([
                             html.P(f'{game.get_kills()}/{game.get_deaths()}/{game.get_assists()}'),
@@ -156,20 +157,22 @@ class Graph:
                     ]),
                     color="link",
                     id=f"details-button-{game.get_matchid()}",
-                    n_clicks=0
+                    n_clicks=0,
+                    className=button_class  # Apply CSS class based on game outcome
                 )
-            ], style={"display": "inline-block", "margin": "5px"})
+            ], style={"display": "inline-block", "margin": "0"})
 
             carousel_items.append(card_item)
 
-        self.carousel = html.Div(carousel_items, style={"display": "flex", "overflowX": "auto"})
-
+        self.carousel = html.Div(carousel_items, style={
+        "display": "flex", 
+        "overflowX": "auto"})
 
     # function to display all informations about a game the user will click on a button
     def create_datas_board(self):
         datas_board = dbc.Card([
             dbc.CardBody(
-                html.H1("GameGenius")
+                html.H1(self.actual_game.get_matchid())
             )
         ])
 
@@ -201,6 +204,9 @@ class Graph:
             ]),
             dbc.Row(
                 dbc.Col(html.Div(self.carousel), width=12)
+            ),
+            dbc.Row(
+                dbc.Col(html.Div(self.datas_board), width=12)
             )
         ])
 
