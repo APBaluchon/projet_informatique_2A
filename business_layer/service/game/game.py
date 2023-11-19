@@ -39,6 +39,7 @@ class Game:
         self.kills = datas['kills']
         self.matchid = datas['matchid']
         self.puuid = datas['puuid']
+        self.teamid = datas['teamid']
         self.totaldamagedealttochampions = datas["totaldamagedealttochampions"]
         self.totaldamagetaken = datas['totaldamagetaken']
         self.totalminionskilled = datas['totalminionskilled']

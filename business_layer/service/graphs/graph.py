@@ -2,9 +2,16 @@ from business_layer.dao.dbgameshandler import DBGamesHandler
 from business_layer.service.other.utils import Utils
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
+from dash import Input, Output, callback, State, ALL
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from dash_bootstrap_templates import load_figure_template
+from business_layer.service.game.game import Game
+import plotly.express as px
+import pandas as pd
+import dash
+import json
+import dash_table
 
 
 class Graph:
@@ -51,7 +58,10 @@ class Graph:
     rank : str
         The rank of the player.
     """
+
     def __init__(self, pseudo, poste, rank = None):
+        self.tab_about_game = None
+
         self.actual_game = None
         self.caroussel = None
         self.datas_board = None
@@ -66,6 +76,7 @@ class Graph:
         self.indicators_players = dict()
         self.indicators_others = dict()
         self.indicators_explain = dict()
+        self.player_puuid = None
         
     def calculate_indicators_players(self):
         """
@@ -75,9 +86,9 @@ class Graph:
         for the player and others in their rank tier, and stores them for further analysis or visualization.
         """
 
-        player_puuid = DBGamesHandler().get_puuid(self.pseudo)
+        self.player_puuid = DBGamesHandler().get_puuid(self.pseudo)
         self.rank = DBGamesHandler().get_player_rank(self.pseudo)
-        datas = DBGamesHandler().get_games_for_one_position(player_puuid, self.poste)
+        datas = DBGamesHandler().get_games_for_one_position(self.player_puuid, self.poste)
         datas_others = DBGamesHandler().get_all_games_for_one_position_and_one_tier(self.poste, self.rank)
 
         df, df_means = Utils().convert_datas_to_dataframe(datas)
@@ -87,6 +98,7 @@ class Graph:
         self.games_other = Utils().convert_dataframe_to_game_list(df_others)
 
         self.actual_game = self.games_player[0]
+        self.game_datas = pd.DataFrame(DBGamesHandler().get_game_datas(self.actual_game.get_matchid()))
 
         for indicateur, details in self.indicators.items():
             self.indicators_players[indicateur] = Utils().interpolate(details["formule"](df_means), 0, details["max"])
@@ -156,10 +168,9 @@ class Graph:
                         ])
                     ]),
                     color="link",
-                    id=f"details-button-{game.get_matchid()}",
+                    id={"type": "game-button", "index": game.get_matchid()},
                     n_clicks=0,
-                    className=button_class  # Apply CSS class based on game outcome
-                )
+                    className=button_class)
             ], style={"display": "inline-block", "margin": "0"})
 
             carousel_items.append(card_item)
@@ -168,16 +179,60 @@ class Graph:
         "display": "flex", 
         "overflowX": "auto"})
 
-    # function to display all informations about a game the user will click on a button
-    def create_datas_board(self):
-        datas_board = dbc.Card([
-            dbc.CardBody(
-                html.H1(self.actual_game.get_matchid())
-            )
-        ])
+    def create_table(self):
+        win_color_head = "rgba(50, 255, 100, 0.2)"
+        loose_color_head = "rgba(255, 50, 100, 0.2)"
 
-        self.datas_board = html.Div(datas_board)
-        
+        win_color_row = "rgba(50, 255, 100, 0.1)"
+        loose_color_row = "rgba(255, 50, 100, 0.1)"
+
+        table_header = [
+            html.Thead(
+                html.Tr(
+                    [html.Th("")] + 
+                    [
+                        html.Th(col, style={"background-color": win_color_head if win else loose_color_head})
+                        for col, win in zip(self.game_datas["championname"], self.game_datas["win"])
+                    ]
+                )
+            ),
+        ]
+
+        rows = []
+        available = ["kills", "assists", "deaths", "totaldamagedealttochampions", "totalminionskilled", "turretkills", "goldearned"]
+        for col in available:
+            rows.append(html.Tr([html.Th(col)] + 
+                            [
+                                html.Td(kill, style={"background-color": win_color_row if win else loose_color_row})
+                                for kill, win in zip(self.game_datas[col], self.game_datas["win"])
+                            ]
+                        ))
+
+        table_body = [html.Tbody(rows)]
+
+        table = dbc.Table(table_header + table_body)
+        self.tab_about_game = table
+
+
+    def setup_callbacks(self, app):
+        @app.callback(
+            Output('tab-game', 'children'),
+            [Input({'type': 'game-button', 'index': ALL}, 'n_clicks')]
+        )
+        def update_tab_about_game(n_clicks):
+            ctx = dash.callback_context
+            if not ctx.triggered:
+                return self.tab_about_game
+            else:
+                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+                game_id = json.loads(button_id)["index"]
+
+                self.actual_game = next((game for game in self.games_player if game.get_matchid() == game_id), None)
+                self.game_datas = pd.DataFrame(DBGamesHandler().get_game_datas(self.actual_game.get_matchid()))
+
+                self.create_table()
+                return self.tab_about_game
+
     def display_graph(self):
         """
         Display the graph in a Dash application.
@@ -189,11 +244,11 @@ class Graph:
         self.create_circular_graph()
         self.create_accordion()
         self.create_carousel()
-        self.create_datas_board()
+        self.create_table()
 
         app.layout = dbc.Container([
             dbc.Row([
-                dbc.Col(html.H1("GameGenius"), className = "title", width=12)
+                dbc.Col(html.Img(src="assets/logo.png", className="logo"), width=12),
             ]),
             dbc.Row([
                 dbc.Col(html.H2(f"{self.poste} performance for {self.pseudo}", className = "subtitle"), width=12)
@@ -206,9 +261,9 @@ class Graph:
                 dbc.Col(html.Div(self.carousel), width=12)
             ),
             dbc.Row(
-                dbc.Col(html.Div(self.datas_board), width=12)
+                dbc.Col(self.tab_about_game, id="tab-game")
             )
         ])
 
+        self.setup_callbacks(app)
         app.run_server()
-        

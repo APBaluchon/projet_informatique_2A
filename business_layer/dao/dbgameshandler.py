@@ -15,7 +15,7 @@ class DBGamesHandler(metaclass=Singleton):
         A dictionary containing the API key.
     """
     params = {
-        "api_key" : "RGAPI-576441aa-a082-4d07-b7fd-1eaafe053b73"
+        "api_key" : "RGAPI-1458f4dd-9a7c-4c78-9b2a-6d803bacb22f"
     }
 
     def update_database_games(self, pseudo, start=0, count=60, show_progress_bar=True):
@@ -217,78 +217,78 @@ class DBGamesHandler(metaclass=Singleton):
         """
 
         infos = self.get_all_variables_for_database(puuid, matchid)
-        if infos["queueId"] in [420, 440]:
-            try:
-                query = """
-                    INSERT INTO projet_info.games (
-                        matchId, puuid, assists, baronKills, bountyLevel, 
-                        champExperience, champLevel, championName, consumablesPurchased, 
-                        damageDealtToBuildings, damageDealtToObjectives, damageDealtToTurrets, 
-                        damageSelfMitigated, deaths, detectorWardsPlaced, doubleKills, 
-                        dragonKills, firstBloodAssist, firstBloodKill, firstTowerAssist, 
-                        firstTowerKill, gameDuration, gameEndedInEarlySurrender, gameEndedInSurrender, 
-                        goldEarned, goldSpent, inhibitorKills, inhibitorTakedowns, 
-                        inhibitorsLost, item0, item1, item2, item3, item4, item5, 
-                        item6, itemsPurchased, killingSprees, kills, 
-                        largestCriticalStrike, largestKillingSpree, largestMultiKill, 
-                        longestTimeSpentLiving, magicDamageDealt, magicDamageDealtToChampions, 
-                        magicDamageTaken, neutralMinionsKilled, nexusKills, nexusTakedowns, 
-                        nexusLost, objectivesStolen, objectivesStolenAssists, participantId, 
-                        pentaKills, physicalDamageDealt, physicalDamageDealtToChampions, 
-                        physicalDamageTaken, quadraKills, riotIdName, 
-                        riotIdTagline, sightWardsBoughtInGame, spell1Casts, 
-                        spell2Casts, spell3Casts, spell4Casts, summoner1Casts, 
-                        summoner1Id, summoner2Casts, summoner2Id, teamEarlySurrendered, teamId, 
-                        teamKills, teamPosition, timeCCingOthers, timePlayed, totalDamageDealt, 
-                        totalDamageDealtToChampions, totalDamageShieldedOnTeammates, 
-                        totalDamageTaken, totalHeal, totalHealsOnTeammates, totalMinionsKilled, 
-                        totalTimeCCDealt, totalTimeSpentDead, totalUnitsHealed, tripleKills, 
-                        trueDamageDealt, trueDamageDealtToChampions, trueDamageTaken, 
-                        turretKills, turretTakedowns, turretsLost, unrealKills, visionScore, 
-                        visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
-                    )
-                    VALUES (
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s
-                    )
-                """
-                with DBConnection().connection as connection:
-                    with connection.cursor() as cursor:
-                        cursor.execute(query, (
-                            infos["matchId"], infos["puuid"], infos["assists"], infos["baronKills"], infos["bountyLevel"], 
-                            infos["champExperience"], infos["champLevel"], infos["championName"], infos["consumablesPurchased"], 
-                            infos["damageDealtToBuildings"], infos["damageDealtToObjectives"], infos["damageDealtToTurrets"], 
-                            infos["damageSelfMitigated"], infos["deaths"], infos["detectorWardsPlaced"], infos["doubleKills"], 
-                            infos["dragonKills"], infos["firstBloodAssist"], infos["firstBloodKill"], infos["firstTowerAssist"], 
-                            infos["firstTowerKill"], infos["gameDuration"], infos["gameEndedInEarlySurrender"], infos["gameEndedInSurrender"], 
-                            infos["goldEarned"], infos["goldSpent"], infos["inhibitorKills"], infos["inhibitorTakedowns"], 
-                            infos["inhibitorsLost"], infos["item0"], infos["item1"], infos["item2"], infos["item3"], infos["item4"], infos["item5"], 
-                            infos["item6"], infos["itemsPurchased"], infos["killingSprees"], infos["kills"], 
-                            infos["largestCriticalStrike"], infos["largestKillingSpree"], infos["largestMultiKill"], 
-                            infos["longestTimeSpentLiving"], infos["magicDamageDealt"], infos["magicDamageDealtToChampions"], 
-                            infos["magicDamageTaken"], infos["neutralMinionsKilled"], infos["nexusKills"], infos["nexusTakedowns"], 
-                            infos["nexusLost"], infos["objectivesStolen"], infos["objectivesStolenAssists"], infos["participantId"], 
-                            infos["pentaKills"], infos["physicalDamageDealt"], infos["physicalDamageDealtToChampions"], 
-                            infos["physicalDamageTaken"], infos["quadraKills"], infos["riotIdName"], 
-                            infos["riotIdTagline"], infos["sightWardsBoughtInGame"], infos["spell1Casts"], 
-                            infos["spell2Casts"], infos["spell3Casts"], infos["spell4Casts"], infos["summoner1Casts"], 
-                            infos["summoner1Id"], infos["summoner2Casts"], infos["summoner2Id"], infos["teamEarlySurrendered"], infos["teamId"], 
-                            infos["teamKills"], infos["teamPosition"], infos["timeCCingOthers"], infos["timePlayed"], infos["totalDamageDealt"], 
-                            infos["totalDamageDealtToChampions"], infos["totalDamageShieldedOnTeammates"], 
-                            infos["totalDamageTaken"], infos["totalHeal"], infos["totalHealsOnTeammates"], infos["totalMinionsKilled"], 
-                            infos["totalTimeCCDealt"], infos["totalTimeSpentDead"], infos["totalUnitsHealed"], infos["tripleKills"], 
-                            infos["trueDamageDealt"], infos["trueDamageDealtToChampions"], infos["trueDamageTaken"], 
-                            infos["turretKills"], infos["turretTakedowns"], infos["turretsLost"], infos["unrealKills"], infos["visionScore"], 
-                            infos["visionWardsBoughtInGame"], infos["wardsKilled"], infos["wardsPlaced"], infos["win"]
-                        ))
-            except Exception as e:
-                print(f"Error adding game {matchid} information to database for {puuid}: {e}")
-
+        for info in infos:
+            if info["queueId"] in [420, 440]:
+                try:
+                    query = """
+                        INSERT INTO projet_info.games (
+                            matchId, puuid, assists, baronKills, bountyLevel, 
+                            champExperience, champLevel, championName, consumablesPurchased, 
+                            damageDealtToBuildings, damageDealtToObjectives, damageDealtToTurrets, 
+                            damageSelfMitigated, deaths, detectorWardsPlaced, doubleKills, 
+                            dragonKills, firstBloodAssist, firstBloodKill, firstTowerAssist, 
+                            firstTowerKill, gameDuration, gameEndedInEarlySurrender, gameEndedInSurrender, 
+                            goldEarned, goldSpent, inhibitorKills, inhibitorTakedowns, 
+                            inhibitorsLost, item0, item1, item2, item3, item4, item5, 
+                            item6, itemsPurchased, killingSprees, kills, 
+                            largestCriticalStrike, largestKillingSpree, largestMultiKill, 
+                            longestTimeSpentLiving, magicDamageDealt, magicDamageDealtToChampions, 
+                            magicDamageTaken, neutralMinionsKilled, nexusKills, nexusTakedowns, 
+                            nexusLost, objectivesStolen, objectivesStolenAssists, participantId, 
+                            pentaKills, physicalDamageDealt, physicalDamageDealtToChampions, 
+                            physicalDamageTaken, quadraKills, riotIdName, 
+                            riotIdTagline, sightWardsBoughtInGame, spell1Casts, 
+                            spell2Casts, spell3Casts, spell4Casts, summoner1Casts, 
+                            summoner1Id, summoner2Casts, summoner2Id, teamEarlySurrendered, teamId, 
+                            teamKills, teamPosition, timeCCingOthers, timePlayed, totalDamageDealt, 
+                            totalDamageDealtToChampions, totalDamageShieldedOnTeammates, 
+                            totalDamageTaken, totalHeal, totalHealsOnTeammates, totalMinionsKilled, 
+                            totalTimeCCDealt, totalTimeSpentDead, totalUnitsHealed, tripleKills, 
+                            trueDamageDealt, trueDamageDealtToChampions, trueDamageTaken, 
+                            turretKills, turretTakedowns, turretsLost, unrealKills, visionScore, 
+                            visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
+                        )
+                        VALUES (
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                            %s, %s, %s, %s, %s, %s, %s, %s
+                        )
+                    """
+                    with DBConnection().connection as connection:
+                        with connection.cursor() as cursor:
+                            cursor.execute(query, (
+                                info["matchId"], info["puuid"], info["assists"], info["baronKills"], info["bountyLevel"], 
+                                info["champExperience"], info["champLevel"], info["championName"], info["consumablesPurchased"], 
+                                info["damageDealtToBuildings"], info["damageDealtToObjectives"], info["damageDealtToTurrets"], 
+                                info["damageSelfMitigated"], info["deaths"], info["detectorWardsPlaced"], info["doubleKills"], 
+                                info["dragonKills"], info["firstBloodAssist"], info["firstBloodKill"], info["firstTowerAssist"], 
+                                info["firstTowerKill"], info["gameDuration"], info["gameEndedInEarlySurrender"], info["gameEndedInSurrender"], 
+                                info["goldEarned"], info["goldSpent"], info["inhibitorKills"], info["inhibitorTakedowns"], 
+                                info["inhibitorsLost"], info["item0"], info["item1"], info["item2"], info["item3"], info["item4"], info["item5"], 
+                                info["item6"], info["itemsPurchased"], info["killingSprees"], info["kills"], 
+                                info["largestCriticalStrike"], info["largestKillingSpree"], info["largestMultiKill"], 
+                                info["longestTimeSpentLiving"], info["magicDamageDealt"], info["magicDamageDealtToChampions"], 
+                                info["magicDamageTaken"], info["neutralMinionsKilled"], info["nexusKills"], info["nexusTakedowns"], 
+                                info["nexusLost"], info["objectivesStolen"], info["objectivesStolenAssists"], info["participantId"], 
+                                info["pentaKills"], info["physicalDamageDealt"], info["physicalDamageDealtToChampions"], 
+                                info["physicalDamageTaken"], info["quadraKills"], info["riotIdName"], 
+                                info["riotIdTagline"], info["sightWardsBoughtInGame"], info["spell1Casts"], 
+                                info["spell2Casts"], info["spell3Casts"], info["spell4Casts"], info["summoner1Casts"], 
+                                info["summoner1Id"], info["summoner2Casts"], info["summoner2Id"], info["teamEarlySurrendered"], info["teamId"], 
+                                info["teamKills"], info["teamPosition"], info["timeCCingOthers"], info["timePlayed"], info["totalDamageDealt"], 
+                                info["totalDamageDealtToChampions"], info["totalDamageShieldedOnTeammates"], 
+                                info["totalDamageTaken"], info["totalHeal"], info["totalHealsOnTeammates"], info["totalMinionsKilled"], 
+                                info["totalTimeCCDealt"], info["totalTimeSpentDead"], info["totalUnitsHealed"], info["tripleKills"], 
+                                info["trueDamageDealt"], info["trueDamageDealtToChampions"], info["trueDamageTaken"], 
+                                info["turretKills"], info["turretTakedowns"], info["turretsLost"], info["unrealKills"], info["visionScore"], 
+                                info["visionWardsBoughtInGame"], info["wardsKilled"], info["wardsPlaced"], info["win"]
+                                ))
+                except Exception as e:
+                    print(f"Error adding game {matchid} information to database for {puuid}: {e}")
 
     def get_all_variables_for_database(self, puuid, matchid):
         """
@@ -314,116 +314,114 @@ class DBGamesHandler(metaclass=Singleton):
         else:
             response = response.json()
 
-        info_about_player = None
+        all_players_info = []
+
         for participant in response["info"]["participants"]:
-            if participant["puuid"] == puuid:
-                info_about_player = participant
-                break
+            player_info = {
+                "queueId": response["info"]["queueId"],
+                "mapId": response["info"]["mapId"],
+                "matchId": response["metadata"]["matchId"],
+                "puuid": participant.get("puuid", ""),
+                "assists": participant.get("assists", 0),
+                "baronKills": participant.get("baronKills", 0),
+                "bountyLevel": participant.get("bountyLevel", 0),
+                "champExperience": participant.get("champExperience", 0),
+                "champLevel": participant.get("champLevel", 0),
+                "championName": participant.get("championName", ""),
+                "consumablesPurchased": participant.get("consumablesPurchased", 0),
+                "damageDealtToBuildings": participant.get("damageDealtToBuildings", 0),
+                "damageDealtToObjectives": participant.get("damageDealtToObjectives", 0),
+                "damageDealtToTurrets": participant.get("damageDealtToTurrets", 0),
+                "damageSelfMitigated": participant.get("damageSelfMitigated", 0),
+                "deaths": participant.get("deaths", 0),
+                "detectorWardsPlaced": participant.get("detectorWardsPlaced", 0),
+                "doubleKills": participant.get("doubleKills", 0),
+                "dragonKills": participant.get("dragonKills", 0),
+                "firstBloodAssist": participant.get("firstBloodAssist", False),
+                "firstBloodKill": participant.get("firstBloodKill", False),
+                "firstTowerAssist": participant.get("firstTowerAssist", False),
+                "firstTowerKill": participant.get("firstTowerKill", False),
+                "gameDuration": response["info"]["gameDuration"],
+                "gameEndedInEarlySurrender": participant.get("gameEndedInEarlySurrender", False),
+                "gameEndedInSurrender": participant.get("gameEndedInSurrender", False),
+                "goldEarned": participant.get("goldEarned", 0),
+                "goldSpent": participant.get("goldSpent", 0),
+                "inhibitorKills": participant.get("inhibitorKills", 0),
+                "inhibitorTakedowns": participant.get("inhibitorTakedowns", 0),
+                "inhibitorsLost": participant.get("inhibitorsLost", 0),
+                "item0": participant.get("item0", 0),
+                "item1": participant.get("item1", 0),
+                "item2": participant.get("item2", 0),
+                "item3": participant.get("item3", 0),
+                "item4": participant.get("item4", 0),
+                "item5": participant.get("item5", 0),
+                "item6": participant.get("item6", 0),
+                "itemsPurchased": participant.get("itemsPurchased", 0),
+                "killingSprees": participant.get("killingSprees", 0),
+                "kills": participant.get("kills", 0),
+                "largestCriticalStrike": participant.get("largestCriticalStrike", 0),
+                "largestKillingSpree": participant.get("largestKillingSpree", 0),
+                "largestMultiKill": participant.get("largestMultiKill", 0),
+                "longestTimeSpentLiving": participant.get("longestTimeSpentLiving", 0),
+                "magicDamageDealt": participant.get("magicDamageDealt", 0),
+                "magicDamageDealtToChampions": participant.get("magicDamageDealtToChampions", 0),
+                "magicDamageTaken": participant.get("magicDamageTaken", 0),
+                "neutralMinionsKilled": participant.get("neutralMinionsKilled", 0),
+                "nexusKills": participant.get("nexusKills", 0),
+                "nexusTakedowns": participant.get("nexusTakedowns", 0),
+                "nexusLost": participant.get("nexusLost", 0),
+                "objectivesStolen": participant.get("objectivesStolen", 0),
+                "objectivesStolenAssists": participant.get("objectivesStolenAssists", 0),
+                "participantId": participant.get("participantId", 0),
+                "pentaKills": participant.get("pentaKills", 0),
+                "physicalDamageDealt": participant.get("physicalDamageDealt", 0),
+                "physicalDamageDealtToChampions": participant.get("physicalDamageDealtToChampions", 0),
+                "physicalDamageTaken": participant.get("physicalDamageTaken", 0),
+                "quadraKills": participant.get("quadraKills", 0),
+                "riotIdName": participant.get("riotIdName", ""),
+                "riotIdTagline": participant.get("riotIdTagline", ""),
+                "sightWardsBoughtInGame": participant.get("sightWardsBoughtInGame", 0),
+                "spell1Casts": participant.get("spell1Casts", 0),
+                "spell2Casts": participant.get("spell2Casts", 0),
+                "spell3Casts": participant.get("spell3Casts", 0),
+                "spell4Casts": participant.get("spell4Casts", 0),
+                "summoner1Casts": participant.get("summoner1Casts", 0),
+                "summoner1Id": participant.get("summoner1Id", 0),
+                "summoner2Casts": participant.get("summoner2Casts", 0),
+                "summoner2Id": participant.get("summoner2Id", 0),
+                "teamEarlySurrendered": participant.get("teamEarlySurrendered", False),
+                "teamId": participant.get("teamId", 0),
+                "teamKills": sum([p["kills"] for p in response["info"]["participants"]]),
+                "teamPosition": participant.get("teamPosition", ""),
+                "timeCCingOthers": participant.get("timeCCingOthers", 0),
+                "timePlayed": participant.get("timePlayed", 0),
+                "totalDamageDealt": participant.get("totalDamageDealt", 0),
+                "totalDamageDealtToChampions": participant.get("totalDamageDealtToChampions", 0),
+                "totalDamageShieldedOnTeammates": participant.get("totalDamageShieldedOnTeammates", 0),
+                "totalDamageTaken": participant.get("totalDamageTaken", 0),
+                "totalHeal": participant.get("totalHeal", 0),
+                "totalHealsOnTeammates": participant.get("totalHealsOnTeammates", 0),
+                "totalMinionsKilled": participant.get("totalMinionsKilled", 0),
+                "totalTimeCCDealt": participant.get("totalTimeCCDealt", 0),
+                "totalTimeSpentDead": participant.get("totalTimeSpentDead", 0),
+                "totalUnitsHealed": participant.get("totalUnitsHealed", 0),
+                "tripleKills": participant.get("tripleKills", 0),
+                "trueDamageDealt": participant.get("trueDamageDealt", 0),
+                "trueDamageDealtToChampions": participant.get("trueDamageDealtToChampions", 0),
+                "trueDamageTaken": participant.get("trueDamageTaken", 0),
+                "turretKills": participant.get("turretKills", 0),
+                "turretTakedowns": participant.get("turretTakedowns", 0),
+                "turretsLost": participant.get("turretsLost", 0),
+                "unrealKills": participant.get("unrealKills", 0),
+                "visionScore": participant.get("visionScore", 0),
+                "visionWardsBoughtInGame": participant.get("visionWardsBoughtInGame", 0),
+                "wardsKilled": participant.get("wardsKilled", 0),
+                "wardsPlaced": participant.get("wardsPlaced", 0),
+                "win": participant.get("win", False)
+            }
+            all_players_info.append(player_info)
 
-        infos_response = {
-            "queueId": response["info"]["queueId"],
-            "mapId": response["info"]["mapId"],
-            "matchId": response["metadata"]["matchId"],
-            "puuid": info_about_player.get("puuid", ""),
-            "assists": info_about_player.get("assists", 0),
-            "baronKills": info_about_player.get("baronKills", 0),
-            "bountyLevel": info_about_player.get("bountyLevel", 0),
-            "champExperience": info_about_player.get("champExperience", 0),
-            "champLevel": info_about_player.get("champLevel", 0),
-            "championName": info_about_player.get("championName", ""),
-            "consumablesPurchased": info_about_player.get("consumablesPurchased", 0),
-            "damageDealtToBuildings": info_about_player.get("damageDealtToBuildings", 0),
-            "damageDealtToObjectives": info_about_player.get("damageDealtToObjectives", 0),
-            "damageDealtToTurrets": info_about_player.get("damageDealtToTurrets", 0),
-            "damageSelfMitigated": info_about_player.get("damageSelfMitigated", 0),
-            "deaths": info_about_player.get("deaths", 0),
-            "detectorWardsPlaced": info_about_player.get("detectorWardsPlaced", 0),
-            "doubleKills": info_about_player.get("doubleKills", 0),
-            "dragonKills": info_about_player.get("dragonKills", 0),
-            "firstBloodAssist": info_about_player.get("firstBloodAssist", False),
-            "firstBloodKill": info_about_player.get("firstBloodKill", False),
-            "firstTowerAssist": info_about_player.get("firstTowerAssist", False),
-            "firstTowerKill": info_about_player.get("firstTowerKill", False),
-            "gameDuration": response["info"]["gameDuration"],
-            "gameEndedInEarlySurrender": info_about_player.get("gameEndedInEarlySurrender", False),
-            "gameEndedInSurrender": info_about_player.get("gameEndedInSurrender", False),
-            "goldEarned": info_about_player.get("goldEarned", 0),
-            "goldSpent": info_about_player.get("goldSpent", 0),
-            "inhibitorKills": info_about_player.get("inhibitorKills", 0),
-            "inhibitorTakedowns": info_about_player.get("inhibitorTakedowns", 0),
-            "inhibitorsLost": info_about_player.get("inhibitorsLost", 0),
-            "item0": info_about_player.get("item0", 0),
-            "item1": info_about_player.get("item1", 0),
-            "item2": info_about_player.get("item2", 0),
-            "item3": info_about_player.get("item3", 0),
-            "item4": info_about_player.get("item4", 0),
-            "item5": info_about_player.get("item5", 0),
-            "item6": info_about_player.get("item6", 0),
-            "itemsPurchased": info_about_player.get("itemsPurchased", 0),
-            "killingSprees": info_about_player.get("killingSprees", 0),
-            "kills": info_about_player.get("kills", 0),
-            "largestCriticalStrike": info_about_player.get("largestCriticalStrike", 0),
-            "largestKillingSpree": info_about_player.get("largestKillingSpree", 0),
-            "largestMultiKill": info_about_player.get("largestMultiKill", 0),
-            "longestTimeSpentLiving": info_about_player.get("longestTimeSpentLiving", 0),
-            "magicDamageDealt": info_about_player.get("magicDamageDealt", 0),
-            "magicDamageDealtToChampions": info_about_player.get("magicDamageDealtToChampions", 0),
-            "magicDamageTaken": info_about_player.get("magicDamageTaken", 0),
-            "neutralMinionsKilled": info_about_player.get("neutralMinionsKilled", 0),
-            "nexusKills": info_about_player.get("nexusKills", 0),
-            "nexusTakedowns": info_about_player.get("nexusTakedowns", 0),
-            "nexusLost": info_about_player.get("nexusLost", 0),
-            "objectivesStolen": info_about_player.get("objectivesStolen", 0),
-            "objectivesStolenAssists": info_about_player.get("objectivesStolenAssists", 0),
-            "participantId": info_about_player.get("participantId", 0),
-            "pentaKills": info_about_player.get("pentaKills", 0),
-            "physicalDamageDealt": info_about_player.get("physicalDamageDealt", 0),
-            "physicalDamageDealtToChampions": info_about_player.get("physicalDamageDealtToChampions", 0),
-            "physicalDamageTaken": info_about_player.get("physicalDamageTaken", 0),
-            "quadraKills": info_about_player.get("quadraKills", 0),
-            "riotIdName": info_about_player.get("riotIdName", ""),
-            "riotIdTagline": info_about_player.get("riotIdTagline", ""),
-            "sightWardsBoughtInGame": info_about_player.get("sightWardsBoughtInGame", 0),
-            "spell1Casts": info_about_player.get("spell1Casts", 0),
-            "spell2Casts": info_about_player.get("spell2Casts", 0),
-            "spell3Casts": info_about_player.get("spell3Casts", 0),
-            "spell4Casts": info_about_player.get("spell4Casts", 0),
-            "summoner1Casts": info_about_player.get("summoner1Casts", 0),
-            "summoner1Id": info_about_player.get("summoner1Id", 0),
-            "summoner2Casts": info_about_player.get("summoner2Casts", 0),
-            "summoner2Id": info_about_player.get("summoner2Id", 0),
-            "teamEarlySurrendered": info_about_player.get("teamEarlySurrendered", False),
-            "teamId": info_about_player.get("teamId", 0),
-            "teamKills": sum([p["kills"] for p in response["info"]["participants"]]),
-            "teamPosition": info_about_player.get("teamPosition", ""),
-            "timeCCingOthers": info_about_player.get("timeCCingOthers", 0),
-            "timePlayed": info_about_player.get("timePlayed", 0),
-            "totalDamageDealt": info_about_player.get("totalDamageDealt", 0),
-            "totalDamageDealtToChampions": info_about_player.get("totalDamageDealtToChampions", 0),
-            "totalDamageShieldedOnTeammates": info_about_player.get("totalDamageShieldedOnTeammates", 0),
-            "totalDamageTaken": info_about_player.get("totalDamageTaken", 0),
-            "totalHeal": info_about_player.get("totalHeal", 0),
-            "totalHealsOnTeammates": info_about_player.get("totalHealsOnTeammates", 0),
-            "totalMinionsKilled": info_about_player.get("totalMinionsKilled", 0),
-            "totalTimeCCDealt": info_about_player.get("totalTimeCCDealt", 0),
-            "totalTimeSpentDead": info_about_player.get("totalTimeSpentDead", 0),
-            "totalUnitsHealed": info_about_player.get("totalUnitsHealed", 0),
-            "tripleKills": info_about_player.get("tripleKills", 0),
-            "trueDamageDealt": info_about_player.get("trueDamageDealt", 0),
-            "trueDamageDealtToChampions": info_about_player.get("trueDamageDealtToChampions", 0),
-            "trueDamageTaken": info_about_player.get("trueDamageTaken", 0),
-            "turretKills": info_about_player.get("turretKills", 0),
-            "turretTakedowns": info_about_player.get("turretTakedowns", 0),
-            "turretsLost": info_about_player.get("turretsLost", 0),
-            "unrealKills": info_about_player.get("unrealKills", 0),
-            "visionScore": info_about_player.get("visionScore", 0),
-            "visionWardsBoughtInGame": info_about_player.get("visionWardsBoughtInGame", 0),
-            "wardsKilled": info_about_player.get("wardsKilled", 0),
-            "wardsPlaced": info_about_player.get("wardsPlaced", 0),
-            "win": info_about_player.get("win", False)
-        }
-
-        return infos_response
+        return all_players_info
 
     def get_player_id(self, pseudo):
         """
@@ -558,3 +556,35 @@ class DBGamesHandler(metaclass=Singleton):
                         "INSERT INTO projet_info.players VALUES (%s, %s, %s)",
                         (puuid, pseudo, rank)
                     )
+
+    def get_game_datas(self, matchid):
+        """
+        Get data about a game from the database.
+
+        Parameters
+        ----------
+        matchid : str
+            The ID of the game to retrieve.
+
+        Returns
+        -------
+        dict
+            A dictionary containing game data.
+        """
+        try:
+            query = """
+                SELECT *
+                FROM projet_info.games g
+                WHERE g.matchid = %s
+            """
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(query, (matchid,))
+                    res = cursor.fetchall()
+            return res
+        except Exception as e:
+            print(f"Error getting game data for {matchid}: {e}")
+            return {}
+
+if __name__ == "__main__":
+    print(DBGamesHandler().get_game_data("EUW1_6680437820"))
