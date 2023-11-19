@@ -1,51 +1,26 @@
 class Game:
     """
     Represents a game object with various attributes related to in-game performance.
-
-    Attributes
-    ----------
-    assists: int
-        The number of assists in the game.
-    deaths: int
-        The number of deaths in the game.
-    damagedealttoturrets: int
-        The amount of damage dealt to turrets in the game.
-    gameduration: int
-        The duration of the game.
-    kills: int
-        The number of kills in the game.
-    matchid: str
-        The ID of the game match.
-    puuid: str
-        The PUUID (Player Universally Unique Identifier) associated with the game.
-    totaldamagedealttochampions: int
-        The total damage dealt to champions in the game.
-    totaldamagetaken: int
-        The total damage taken in the game.
-    totalminionskilled: int
-        The total number of minions killed in the game.
-    turretkills: int
-        The number of turrets destroyed in the game.
-    wardsplaced: int
-        The number of wards placed in the game.
     """
 
-    def __init__(self, datas):
-        self.assists = datas['assists']
-        self.championname = datas['championname']
-        self.deaths = datas['deaths']
-        self.damagedealttoturrets = datas['damagedealttoturrets']
-        self.gameduration = datas['gameduration']
-        self.kills = datas['kills']
-        self.matchid = datas['matchid']
-        self.puuid = datas['puuid']
-        self.teamid = datas['teamid']
-        self.totaldamagedealttochampions = datas["totaldamagedealttochampions"]
-        self.totaldamagetaken = datas['totaldamagetaken']
-        self.totalminionskilled = datas['totalminionskilled']
-        self.turretkills = datas["turretkills"]
-        self.wardsplaced = datas['wardsplaced']
-        self.win = datas["win"]
+    def __init__(self, game):
+        self.assists = game["assists"]
+        self.championname = game["championname"]
+        self.deaths = game["deaths"]
+        self.damagedealttoturrets = game["damagedealttoturrets"]
+        self.gameduration = game["gameduration"]
+        self.kills = game["kills"]
+        self.matchid = game["matchid"]
+        self.puuid = game["puuid"]
+        self.totaldamagedealttochampions = game["totaldamagedealttochampions"]
+        self.totaldamagetaken = game["totaldamagetaken"]
+        self.totalminionskilled = game["totalminionskilled"]
+        self.turretkills = game["turretkills"]
+        self.wardsplaced = game["wardsplaced"]
+        self.win = game["win"]
+
+
+
 
     def get_assists(self):
         """

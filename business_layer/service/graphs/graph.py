@@ -191,7 +191,7 @@ class Graph:
                 html.Tr(
                     [html.Th("")] + 
                     [
-                        html.Th(col, style={"background-color": win_color_head if win else loose_color_head})
+                        html.Th(html.Img(src=f"https://ddragon.leagueoflegends.com/cdn/13.22.1/img/champion/{col}.png", alt="Champion Image", style = {"width":"50%", "height":"50%"}), style={"background-color": win_color_head if win else loose_color_head})
                         for col, win in zip(self.game_datas["championname"], self.game_datas["win"])
                     ]
                 )
