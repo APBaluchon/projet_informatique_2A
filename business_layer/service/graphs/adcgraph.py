@@ -63,8 +63,8 @@ class AdcGraph(Graph):
             "☠️": {
                 "formule": lambda df: (
                     df["kills"] + df["assists"]
-                ) / (df["deaths"] + 1), 
-                "max": 10, 
+                ) / (df["deaths"] + 1),
+                "max": 10,
                 "explication": "Fight Efficiency (Kills + Assists / Deaths)",
                 "longer_explication": (
                     "This indicator measures the player's efficiency "
@@ -77,7 +77,7 @@ class AdcGraph(Graph):
                 )
             },
             "🏰": {
-                "formule": lambda df: df["turretkills"] 
+                "formule": lambda df: df["turretkills"]
                 / df["gameduration"] * 60,
                 "max": 0.16,
                 "explication": "Turret kills per Minute",
