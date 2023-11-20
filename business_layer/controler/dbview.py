@@ -1,7 +1,6 @@
 from business_layer.controler.view import View
 
 
-
 class DBView(View):
     """
     A class representing the view for the database controller.
@@ -27,7 +26,7 @@ class DBView(View):
         str
             The user's input.
         """
-        return super().get_input("Pseudo : ")
+        return super().get_input("Pseudo: ")
 
     def ask_modality(self):
         """
@@ -39,10 +38,13 @@ class DBView(View):
             The user's input.
         """
         possibilities_dict = {
-            "1" : "Password",
-            "2" : "Rôle"
+            "1": "Password",
+            "2": "Rôle"
         }
-        return super().get_list_input("Choose the type of modification : ", possibilities_dict.values())
+        return super().get_list_input(
+            "Choose the type of modification: ",
+            possibilities_dict.values()
+        )
 
     def ask_new_password(self):
         """
@@ -53,13 +55,13 @@ class DBView(View):
         str
             The user's input.
         """
-        return super().get_input("Enter the new password : ", "password")
+        return super().get_input("Enter the new password: ", "password")
 
     def wrong_password(self):
         """
         Prints an error message indicating that the username is not in the database.
         """
-        return print("Pseudo isn't in database.")
+        return print("Pseudo isn't in the database.")
 
     def ask_password_new_account(self):
         """
@@ -70,5 +72,7 @@ class DBView(View):
         str
             The user's input.
         """
-        return super().get_input("Enter a new password to create an account : ", "password")
-
+        return super().get_input(
+            "Enter a new password to create an account: ",
+            "password"
+        )

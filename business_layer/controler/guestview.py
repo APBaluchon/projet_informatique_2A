@@ -14,7 +14,7 @@ class GuestView(View):
         str
             The ASCII art representation of the application name.
         """
-        ascii_art = """
+        ascii_art = r"""
    ___                       ___           _           
   / _ \__ _ _ __ ___   ___  / _ \___ _ __ (_)_   _ ___ 
  / /_\/ _` | '_ ` _ \ / _ \/ /_\/ _ \ '_ \| | | | / __|
@@ -32,7 +32,7 @@ class GuestView(View):
         str
             The pseudo entered by the user.
         """
-        return super().get_input("Pseudo : ")
+        return super().get_input("Pseudo: ")
 
     def ask_password(self):
         """
@@ -43,11 +43,10 @@ class GuestView(View):
         str
             The password entered by the user.
         """
-        return super().get_input("Password : ", "password")
+        return super().get_input("Password: ", "password")
 
     def wrong_password(self):
         """
         Prints an error message when the password is incorrect.
         """
         print("Incorrect password. Please try again.")
-

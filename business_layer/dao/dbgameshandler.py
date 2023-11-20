@@ -15,10 +15,11 @@ class DBGamesHandler(metaclass=Singleton):
         A dictionary containing the API key.
     """
     params = {
-        "api_key" : "RGAPI-1458f4dd-9a7c-4c78-9b2a-6d803bacb22f"
+        "api_key": "RGAPI-52e7553e-94f3-4984-8df2-cc8c9da17545"
     }
 
-    def update_database_games(self, pseudo, start=0, count=60, show_progress_bar=True):
+    def update_database_games(self, pseudo, start=0, count=60,
+                              show_progress_bar=True):
         """
         Update the database with the latest games for a given player.
 
@@ -42,12 +43,14 @@ class DBGamesHandler(metaclass=Singleton):
                 with tqdm(total=total_games) as pbar:
                     for i, game in enumerate(last_games):
                         if not self.is_game_in_database(player_puuid, game):
-                            self.add_game_information_to_database(player_puuid, game)
+                            self.add_game_information_to_database(
+                                player_puuid, game)
                         pbar.update(1)
             else:
                 for game in last_games:
                     if not self.is_game_in_database(player_puuid, game):
-                        self.add_game_information_to_database(player_puuid, game)
+                        self.add_game_information_to_database(
+                            player_puuid, game)
             AdminView().clear_screen()
         except Exception as e:
             print(f"Error updating database games for {pseudo}: {e}")
@@ -80,7 +83,10 @@ class DBGamesHandler(metaclass=Singleton):
                         return res["puuid"]
                 except Exception as e:
                     print(f"Error getting PUUID for {pseudo}: {e}")
-        url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
+        url = (
+            f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/"
+            f"by-name/{pseudo}"
+        )
         response = requests.get(url, params=DBGamesHandler.params)
         return response.json()["puuid"]
 
@@ -102,7 +108,10 @@ class DBGamesHandler(metaclass=Singleton):
         list of str
             The list of game IDs.
         """
-        url = f"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start={start}&count={count}"
+        url = (
+            "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/"
+            f"{puuid}/ids?start={start}&count={count}"
+        )
         try:
             response = requests.get(url, params=DBGamesHandler.params)
             return response.json()
@@ -138,7 +147,8 @@ class DBGamesHandler(metaclass=Singleton):
                     res = cursor.fetchone()["count"]
             return res == 1
         except Exception as e:
-            print(f"Error checking if game {matchid} is in database for {puuid}: {e}")
+            print(f"Error checking if game {matchid} is in database for"
+                  f"{puuid}: {e}")
             return False
 
     def get_games_for_one_position(self, puuid, poste):
@@ -191,7 +201,7 @@ class DBGamesHandler(metaclass=Singleton):
         try:
             query = """
                 SELECT *
-                FROM projet_info.games g 
+                FROM projet_info.games g
                 JOIN projet_info.players p ON g.puuid = p.puuid
                 WHERE g.teamposition = %s AND p.rang = %s
             """
@@ -201,7 +211,8 @@ class DBGamesHandler(metaclass=Singleton):
                     res = cursor.fetchall()
             return res
         except Exception as e:
-            print(f"Error getting games for position {poste} and tier {tier}: {e}")
+            print(f"Error getting games for position {poste} and "
+                  f"tier {tier}: {e}")
             return []
 
     def add_game_information_to_database(self, puuid, matchid):
@@ -222,46 +233,53 @@ class DBGamesHandler(metaclass=Singleton):
                 try:
                     query = """
                         INSERT INTO projet_info.games (
-                            matchId, puuid, assists, baronKills, bountyLevel, 
-                            champExperience, champLevel, championName, consumablesPurchased, 
-                            damageDealtToBuildings, damageDealtToObjectives, damageDealtToTurrets, 
-                            damageSelfMitigated, deaths, detectorWardsPlaced, doubleKills, 
-                            dragonKills, firstBloodAssist, firstBloodKill, firstTowerAssist, 
-                            firstTowerKill, gameDuration, gameEndedInEarlySurrender, gameEndedInSurrender, 
-                            goldEarned, goldSpent, inhibitorKills, inhibitorTakedowns, 
-                            inhibitorsLost, item0, item1, item2, item3, item4, item5, 
-                            item6, itemsPurchased, killingSprees, kills, 
-                            largestCriticalStrike, largestKillingSpree, largestMultiKill, 
-                            longestTimeSpentLiving, magicDamageDealt, magicDamageDealtToChampions, 
-                            magicDamageTaken, neutralMinionsKilled, nexusKills, nexusTakedowns, 
-                            nexusLost, objectivesStolen, objectivesStolenAssists, participantId, 
-                            pentaKills, physicalDamageDealt, physicalDamageDealtToChampions, 
-                            physicalDamageTaken, quadraKills, riotIdName, 
-                            riotIdTagline, sightWardsBoughtInGame, spell1Casts, 
-                            spell2Casts, spell3Casts, spell4Casts, summoner1Casts, 
-                            summoner1Id, summoner2Casts, summoner2Id, teamEarlySurrendered, teamId, 
-                            teamKills, teamPosition, timeCCingOthers, timePlayed, totalDamageDealt, 
-                            totalDamageDealtToChampions, totalDamageShieldedOnTeammates, 
-                            totalDamageTaken, totalHeal, totalHealsOnTeammates, totalMinionsKilled, 
-                            totalTimeCCDealt, totalTimeSpentDead, totalUnitsHealed, tripleKills, 
-                            trueDamageDealt, trueDamageDealtToChampions, trueDamageTaken, 
-                            turretKills, turretTakedowns, turretsLost, unrealKills, visionScore, 
-                            visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
+matchId, puuid, assists, baronKills, bountyLevel,
+champExperience, champLevel, championName,
+consumablesPurchased, damageDealtToBuildings,
+damageDealtToObjectives, damageDealtToTurrets,
+damageSelfMitigated, deaths, detectorWardsPlaced,
+doubleKills, dragonKills, firstBloodAssist,
+firstBloodKill, firstTowerAssist, firstTowerKill,
+gameDuration, gameEndedInEarlySurrender,
+gameEndedInSurrender, goldEarned, goldSpent,
+inhibitorKills, inhibitorTakedowns, inhibitorsLost,
+item0, item1, item2, item3, item4, item5,
+item6, itemsPurchased, killingSprees, kills,
+largestCriticalStrike, largestKillingSpree,
+largestMultiKill, longestTimeSpentLiving,
+magicDamageDealt, magicDamageDealtToChampions,
+magicDamageTaken, neutralMinionsKilled,
+nexusKills, nexusTakedowns, nexusLost,
+objectivesStolen, objectivesStolenAssists,
+participantId, pentaKills, physicalDamageDealt,
+physicalDamageDealtToChampions, physicalDamageTaken,
+quadraKills, riotIdName, riotIdTagline,
+sightWardsBoughtInGame, spell1Casts, spell2Casts,
+spell3Casts, spell4Casts, summoner1Casts, summoner1Id,
+summoner2Casts, summoner2Id, teamEarlySurrendered, teamId,
+teamKills, teamPosition, timeCCingOthers, timePlayed, totalDamageDealt,
+totalDamageDealtToChampions, totalDamageShieldedOnTeammates,
+totalDamageTaken, totalHeal, totalHealsOnTeammates, totalMinionsKilled,
+totalTimeCCDealt, totalTimeSpentDead, totalUnitsHealed, tripleKills,
+trueDamageDealt, trueDamageDealtToChampions, trueDamageTaken,
+turretKills, turretTakedowns, turretsLost, unrealKills, visionScore,
+visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
                         )
                         VALUES (
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                            %s, %s, %s, %s, %s, %s, %s, %s
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s
                         )
                     """
                     with DBConnection().connection as connection:
                         with connection.cursor() as cursor:
                             cursor.execute(query, (
-                                info["matchId"], info["puuid"], info["assists"], info["baronKills"], info["bountyLevel"], 
+                                info["matchId"], info["puuid"], info["assists"],
+                                info["baronKills"], info["bountyLevel"],
                                 info["champExperience"], info["champLevel"], info["championName"], info["consumablesPurchased"], 
                                 info["damageDealtToBuildings"], info["damageDealtToObjectives"], info["damageDealtToTurrets"], 
                                 info["damageSelfMitigated"], info["deaths"], info["detectorWardsPlaced"], info["doubleKills"], 
@@ -288,7 +306,8 @@ class DBGamesHandler(metaclass=Singleton):
                                 info["visionWardsBoughtInGame"], info["wardsKilled"], info["wardsPlaced"], info["win"]
                                 ))
                 except Exception as e:
-                    print(f"Error adding game {matchid} information to database for {puuid}: {e}")
+                    print(f"Error adding game {matchid} information to "
+                          f"database for {puuid}: {e}")
 
     def get_all_variables_for_database(self, puuid, matchid):
         """
@@ -437,12 +456,16 @@ class DBGamesHandler(metaclass=Singleton):
         str or None
             The player's ID, or None if the API request failed.
         """
-        url = f"https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{pseudo}"
+        url = (
+            "https://euw1.api.riotgames.com/lol/summoner/v4/"
+            f"summoners/by-name/{pseudo}"
+        )
         response = requests.get(url, params=DBGamesHandler.params)
         if response.status_code == 200:
             return response.json()["id"]
         else:
-            print(f"Error getting player ID for {pseudo}: {response.status_code}")
+            print(f"Error getting player ID for {pseudo}:"
+                  f"{response.status_code}")
             return None
 
     def get_player_rank(self, pseudo):
@@ -462,7 +485,8 @@ class DBGamesHandler(metaclass=Singleton):
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "SELECT * FROM projet_info.players p WHERE p.summonername = %s",
+                    "SELECT * FROM projet_info.players p "
+                    "WHERE p.summonername = %s",
                     (pseudo,)
                 )
 
@@ -471,12 +495,16 @@ class DBGamesHandler(metaclass=Singleton):
             return res["rang"]
         else:
             id_player = self.get_player_id(pseudo)
-            url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/{id_player}"
+            url = (
+                f"https://euw1.api.riotgames.com/lol/league/v4/entries/"
+                f"by-summoner/{id_player}"
+            )
             response = requests.get(url, params=DBGamesHandler.params)
             if response.status_code == 200:
                 return response.json()[0]["tier"]
             else:
-                print(f"Error getting player rank for {pseudo}: {response.status_code}")
+                print(f"Error getting player rank for {pseudo}:"
+                      f"{response.status_code}")
                 return None
 
     def add_games_to_database(self):
@@ -495,8 +523,10 @@ class DBGamesHandler(metaclass=Singleton):
         """
         Update the database with games played by a single player.
 
-        This method prompts the user to enter the name of a player, retrieves the player's match history from the Riot Games API,
-        and updates the database with information about each game played by the player.
+        This method prompts the user to enter the name of a player, retrieves
+        the player's match history from the Riot Games API,
+        and updates the database with information about each game played by
+        the player.
         """
         pseudo = AdminView().ask_pseudo_to_add()
         self.update_database_games(pseudo)
@@ -505,13 +535,18 @@ class DBGamesHandler(metaclass=Singleton):
         """
         Update the database with games played by players in a given tier.
 
-        This method prompts the user to enter a tier, retrieves the list of players in that tier from the Riot Games API,
-        and updates the database with information about each game played by each player.
+        This method prompts the user to enter a tier, retrieves the list of
+        players in that tier from the Riot Games API,
+        and updates the database with information about each game played by
+        each player.
         """
         tier = AdminView().ask_tier_to_add()
         division = AdminView().ask_division_to_add()
 
-        url = f"https://euw1.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/{tier}/{division}?page=1"
+        url = (
+            "https://euw1.api.riotgames.com/lol/league/v4/entries/"
+            f"RANKED_SOLO_5x5/{tier}/{division}?page=1"
+        )
         response = requests.get(url, params=DBGamesHandler.params)
 
         if response.status_code == 200:
@@ -519,17 +554,22 @@ class DBGamesHandler(metaclass=Singleton):
             total_players = len(players)
             with tqdm(total=total_players) as pbar:
                 for player in players:
-                    self.update_database_games(player["summonerName"], 0, 1, False)
+                    self.update_database_games(player["summonerName"], 0, 1,
+                                               False)
                     pbar.update(1)
         else:
-            print(f"Error getting players in tier {tier}: {response.status_code}")
+            print(
+                f"Error getting players in tier {tier}: {response.status_code}"
+            )
 
     def update_database_players(self, pseudo):
         """
         Update the database with information about a player.
 
-        This method takes a player's summoner name as input, retrieves their rank and PUUID from the Riot Games API,
-        and updates the database with this information if the player is not already in the database.
+        This method takes a player's summoner name as input, retrieves their
+        rank and PUUID from the Riot Games API,
+        and updates the database with this information if the player is not
+        already in the database.
 
         Parameters
         ----------
@@ -585,6 +625,3 @@ class DBGamesHandler(metaclass=Singleton):
         except Exception as e:
             print(f"Error getting game data for {matchid}: {e}")
             return {}
-
-if __name__ == "__main__":
-    print(DBGamesHandler().get_game_data("EUW1_6680437820"))

@@ -1,6 +1,7 @@
 class Game:
     """
-    Represents a game object with various attributes related to in-game performance.
+    Represents a game object with various attributes related
+    to in-game performance.
     """
 
     def __init__(self, game):
@@ -18,9 +19,6 @@ class Game:
         self.turretkills = game["turretkills"]
         self.wardsplaced = game["wardsplaced"]
         self.win = game["win"]
-
-
-
 
     def get_assists(self):
         """
@@ -49,7 +47,7 @@ class Game:
     def get_gameduration(self):
         """
         Returns the duration of the game.
-        
+
         The duration is expressed in seconds.
         """
         return self.gameduration
@@ -84,11 +82,11 @@ class Game:
         """
         return self.totaldamagetaken
 
-    def get_totalminiomskilled(self):
+    def get_totalminionskilled(self):
         """
         Returns the total number of minions killed in the game.
         """
-        return self.totalminiomskilled
+        return self.totalminionskilled
 
     def get_turretkills(self):
         """

@@ -18,11 +18,11 @@ class UserView(View):
         "2": "Quit the application"
     }
     positions_dict = {
-        "1" : "Top",
-        "2" : "Jungler",
-        "3" : "Mid",
-        "4" : "ADC",
-        "5" : "Support"
+        "1": "Top",
+        "2": "Jungler",
+        "3": "Mid",
+        "4": "ADC",
+        "5": "Support"
     }
 
     def ask_action(self):
@@ -34,7 +34,10 @@ class UserView(View):
         str
             The action to perform.
         """
-        return super().get_list_input("Enter the action to perform : ", UserView.actions_dict.values())
+        return super().get_list_input(
+            "Enter the action to perform: ",
+            UserView.actions_dict.values()
+        )
 
     def ask_pseudo_for_analyse(self):
         """
@@ -45,7 +48,7 @@ class UserView(View):
         str
             The player's username to analyze.
         """
-        return super().get_input("Enter a pseudo to analyze : ")
+        return super().get_input("Enter a pseudo to analyze: ")
 
     def ask_for_position(self):
         """
@@ -56,4 +59,7 @@ class UserView(View):
         str
             The position to analyze.
         """
-        return super().get_list_input("Enter the position to analyze : ", UserView.positions_dict.values())
+        return super().get_list_input(
+            "Enter the position to analyze: ",
+            UserView.positions_dict.values()
+        )

@@ -2,10 +2,10 @@ import os
 from InquirerPy import prompt
 
 
-
 class View:
     """
-    This class represents the View layer of the application. It contains methods for getting user input and clearing the screen.
+    This class represents the View layer of the application. It contains 
+    methods for getting user input and clearing the screen.
     """
 
     def clear_screen(self):
@@ -14,7 +14,7 @@ class View:
         """
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def get_input(self, message, type_message = "input"):
+    def get_input(self, message, type_message="input"):
         """
         This method prompts the user for input and returns the result.
 
@@ -22,7 +22,7 @@ class View:
         ----------
         message: str
             The message to display to the user.
-        type_message : str, optional
+        type_message: str, optional
             The type of input to get from the user. Defaults to "input".
 
         Returns
@@ -31,9 +31,11 @@ class View:
             The user's input.
         """
         questions = [
-            {"type" : type_message,
-             "message" : message,
-             "name" : "resultat"}
+            {
+                "type": type_message,
+                "message": message,
+                "name": "resultat"
+            }
         ]
 
         result = prompt(questions)
@@ -41,13 +43,14 @@ class View:
 
     def get_list_input(self, message, list_values):
         """
-        This method prompts the user to select an item from a list and returns the result.
+        This method prompts the user to select an item from a list
+        and returns the result.
 
         Parameters
         ----------
-        message : str
+        message: str
             The message to display to the user.
-        list_values : list
+        list_values: list
             The list of values to display to the user.
 
         Returns
@@ -55,12 +58,14 @@ class View:
         str
             The user's selected item.
         """
-        questions = [{
-            "type" : "list",
-            "message" : message,
-            "choices" : list_values,
-            "name" : "resultat"
-        }]
+        questions = [
+            {
+                "type": "list",
+                "message": message,
+                "choices": list_values,
+                "name": "resultat"
+            }
+        ]
 
         result = prompt(questions)["resultat"]
         return result
