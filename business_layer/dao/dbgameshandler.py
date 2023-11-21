@@ -529,6 +529,7 @@ visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
         the player.
         """
         pseudo = AdminView().ask_pseudo_to_add()
+        self.update_database_players(pseudo)
         self.update_database_games(pseudo)
 
     def add_games_to_database_from_tier(self):
@@ -554,6 +555,7 @@ visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
             total_players = len(players)
             with tqdm(total=total_players) as pbar:
                 for player in players:
+                    self.update_database_players(player["summonerName"])
                     self.update_database_games(player["summonerName"], 0, 1,
                                                False)
                     pbar.update(1)

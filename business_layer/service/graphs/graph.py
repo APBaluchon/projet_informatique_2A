@@ -186,8 +186,14 @@ class Graph:
         win_color_row = "rgba(50, 255, 100, 0.1)"
         loose_color_row = "rgba(255, 50, 100, 0.1)"
 
+        gameduration_minutes = self.actual_game.get_gameduration() // 60
+        gameduration_seconds = self.actual_game.get_gameduration() % 60
+
         table_header = [
-            html.Thead(
+            html.Thead([
+                html.Tr(
+                    html.H3(f'{self.actual_game.get_matchid()} - {gameduration_minutes}m{gameduration_seconds}s')
+                ),
                 html.Tr(
                     [html.Th("")] + 
                     [
@@ -195,7 +201,7 @@ class Graph:
                         for col, win in zip(self.game_datas["championname"], self.game_datas["win"])
                     ]
                 )
-            ),
+            ]),
         ]
 
         rows = []
@@ -212,7 +218,6 @@ class Graph:
 
         table = dbc.Table(table_header + table_body)
         self.tab_about_game = table
-
 
     def setup_callbacks(self, app):
         @app.callback(
