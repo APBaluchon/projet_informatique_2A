@@ -76,3 +76,14 @@ class DBView(View):
             "Enter a new password to create an account: ",
             "password"
         )
+
+    def ask_confirm_password(self):
+        """
+        Asks the user to confirm their password.
+
+        Returns
+        -------
+        str
+            The user's input.
+        """
+        return super().get_input("Confirm your password: ", "password")

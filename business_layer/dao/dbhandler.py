@@ -279,6 +279,16 @@ class DBHandler(metaclass=Singleton):
         """
         try:
             password = DBView().ask_password_new_account()
+            while (len(password) < 5):
+                print("Password must be at least 5 characters long.")
+                password = DBView().ask_password_new_account()
+
+            confirm_password = DBView().ask_confirm_password()
+
+            while (password != confirm_password):
+                print("Passwords don't match.")
+                password = DBView().ask_password_new_account()
+                confirm_password = DBView().ask_confirm_password() 
 
             if self.is_user_in_db(pseudo):
                 print("This user already exists.")
