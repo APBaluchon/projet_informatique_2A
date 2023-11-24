@@ -1,3 +1,10 @@
+"""
+This module provides a class for handling interactions with the database.
+
+This class provides methods to perform various database operations
+such as checking if a user exists, creating a new user, etc.
+"""
+import hashlib
 from business_layer.dao.dbconnection import DBConnection
 from business_layer.service.singleton.singleton import Singleton
 from business_layer.controler.dbview import DBView
@@ -29,7 +36,7 @@ class DBHandler(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT * FROM projet_info.utilisateur u "
-                        "WHERE u.pseudo = %s", 
+                        "WHERE u.pseudo = %s",
                         (pseudo,))
                     res = cursor.fetchone()
                     return bool(res)
@@ -39,10 +46,7 @@ class DBHandler(metaclass=Singleton):
 
     def create_user(self, pseudo, password):
         """
-        Creates a new user in the database.
-
-        This method adds a new user with the specified pseudo and
-        password to the database.
+        Creates a new user in the database with hashed password.
 
         Parameters
         ----------
@@ -60,6 +64,8 @@ class DBHandler(metaclass=Singleton):
             print("Invalid pseudo or password.")
             return False
 
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
@@ -67,7 +73,7 @@ class DBHandler(metaclass=Singleton):
                         "INSERT INTO projet_info.utilisateur "
                         "VALUES (%s, %s, 'user')"
                     )
-                    cursor.execute(query, (pseudo, password))
+                    cursor.execute(query, (pseudo, hashed_password))
                     connection.commit()
                     return True
         except Exception as e:
@@ -76,8 +82,8 @@ class DBHandler(metaclass=Singleton):
 
     def is_password_correct(self, pseudo, password):
         """
-        Checks if the provided password matches the one stored in the
-        database for a given user.
+        Checks if the provided password matches the hashed password
+        in the database.
 
         Parameters
         ----------
@@ -103,7 +109,10 @@ class DBHandler(metaclass=Singleton):
                     res = cursor.fetchone()
                     if res:
                         stored_password = res['mdp']
-                        return password == stored_password
+                        hashed_input_password = hashlib.sha256(
+                            password.encode()
+                            ).hexdigest()
+                        return hashed_input_password == stored_password
                     return False
         except Exception as e:
             print(f"Error verifying password in DB: {e}")
@@ -195,12 +204,13 @@ class DBHandler(metaclass=Singleton):
         """
         try:
             new_password = DBView().ask_new_password()
+            hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "UPDATE projet_info.utilisateur "
                         "SET mdp = %s "
-                        "WHERE pseudo = %s", (new_password, pseudo_compte))
+                        "WHERE pseudo = %s", (hashed_password, pseudo_compte))
                     connection.commit()
         except Exception as e:
             print(f"Error updating password in DB: {e}")
