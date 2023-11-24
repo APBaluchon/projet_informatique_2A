@@ -16,29 +16,28 @@ h2.subtitle {
 }
 
 .game-button {
-  background-color: rgba(50, 255, 100, 0.1); /* default color for win */
+  background-color: rgba(50, 255, 100, 0.1);
   border: none;
   text-decoration: none;
 }
 
 .game-button:hover {
-  background-color: rgba(50, 255, 100, 0.2); /* slightly darker on hover for win */
+  background-color: rgba(50, 255, 100, 0.2); 
 }
 
 .game-button-loss {
   text-decoration: none;
   border: none;
-  background-color: rgba(255, 50, 100, 0.1); /* default color for loss */
+  background-color: rgba(255, 50, 100, 0.1);
 }
 
 .game-button-loss:hover {
-  background-color: rgba(255, 50, 100, 0.2); /* slightly darker on hover for loss */
+  background-color: rgba(255, 50, 100, 0.2);
 }
 
-/* Firefox */
 html {
-  scrollbar-width: thin; /* 'auto' or 'thin' */
-  scrollbar-color: #1f0b44 #0b0623; /* thumb and track color */
+  scrollbar-width: thin; 
+  scrollbar-color: #1f0b44 #0b0623; 
 }
 
 .datas-board {

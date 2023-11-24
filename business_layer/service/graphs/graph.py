@@ -2,16 +2,13 @@ from business_layer.dao.dbgameshandler import DBGamesHandler
 from business_layer.service.other.utils import Utils
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html
-from dash import Input, Output, callback, State, ALL
+from dash import Input, Output, ALL
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from dash_bootstrap_templates import load_figure_template
-from business_layer.service.game.game import Game
-import plotly.express as px
 import pandas as pd
 import dash
 import json
-import dash_table
 
 
 class Graph:
