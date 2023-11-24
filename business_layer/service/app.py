@@ -85,8 +85,3 @@ class App:
         GuestView().clear_screen()
         print(GuestView().display_app_name())
         return self.ask_for_pseudo()
-
-
-if __name__ == "__main__":
-    app = App()
-    app.run()

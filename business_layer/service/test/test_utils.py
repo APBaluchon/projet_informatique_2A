@@ -15,9 +15,10 @@ class TestUtils(unittest.TestCase):
 
     def test_convert_datas_to_dataframe(self):
         datas = [
-            {'name': 'John', 'age': 25},
-            {'name': 'Jane', 'age': 30},
-            {'name': 'Bob', 'age': 35}
+            {'name': 'Aurelien', 'age': 34},
+            {'name': 'Remi', 'age': 30},
+            {'name': 'Marceau', 'age': 35},
+            {'name': 'Ranya', 'age': 25},
         ]
         expected_df = pd.DataFrame(datas)
         df = self.utils.convert_datas_to_dataframe(datas)[0]
