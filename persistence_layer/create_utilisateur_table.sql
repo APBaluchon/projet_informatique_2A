@@ -8,4 +8,4 @@ CREATE TABLE utilisateur (
 );
 ALTER TABLE utilisateur ADD PRIMARY KEY (pseudo);
 
-INSERT INTO utilisateur (pseudo, mdp, "role") VALUES ('admin', '123', 'admin');
+INSERT INTO utilisateur (pseudo, mdp, "role") VALUES ('admin', '4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8', 'admin');

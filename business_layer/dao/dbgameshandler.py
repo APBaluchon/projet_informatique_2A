@@ -15,7 +15,7 @@ class DBGamesHandler(metaclass=Singleton):
         A dictionary containing the API key.
     """
     params = {
-        "api_key": "RGAPI-52e7553e-94f3-4984-8df2-cc8c9da17545"
+        "api_key": "RGAPI-0665f262-4cf0-4e73-8040-c9a60a1affa9"
     }
 
     def update_database_games(self, pseudo, start=0, count=60,
@@ -482,30 +482,34 @@ visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
         str or None
             The player's rank, or None if the API request failed.
         """
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT * FROM projet_info.players p "
-                    "WHERE p.summonername = %s",
-                    (pseudo,)
-                )
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT * FROM projet_info.players p "
+                        "WHERE p.summonername = %s",
+                        (pseudo,)
+                    )
 
-                res = cursor.fetchone()
-        if res:
-            return res["rang"]
-        else:
-            id_player = self.get_player_id(pseudo)
-            url = (
-                f"https://euw1.api.riotgames.com/lol/league/v4/entries/"
-                f"by-summoner/{id_player}"
-            )
-            response = requests.get(url, params=DBGamesHandler.params)
-            if response.status_code == 200:
-                return response.json()[0]["tier"]
+                    res = cursor.fetchone()
+            if res:
+                return res["rang"]
             else:
-                print(f"Error getting player rank for {pseudo}:"
-                      f"{response.status_code}")
-                return None
+                id_player = self.get_player_id(pseudo)
+                url = (
+                    f"https://euw1.api.riotgames.com/lol/league/v4/entries/"
+                    f"by-summoner/{id_player}"
+                )
+                response = requests.get(url, params=DBGamesHandler.params)
+                if response.status_code == 200:
+                    return response.json()[0]["tier"]
+                else:
+                    print(f"Error getting player rank for {pseudo}:"
+                        f"{response.status_code}")
+                    return None
+        except Exception as e:
+            print(f"Error getting rank for {pseudo}: {e}")
+            return {}
 
     def add_games_to_database(self):
         """
@@ -579,25 +583,29 @@ visionWardsBoughtInGame, wardsKilled, wardsPlaced, win
             The summoner name of the player to update.
         """
         res = 1
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT COUNT(*) AS count FROM projet_info.players p "
-                    "WHERE p.summonername = %s",
-                    (pseudo,)
-                )
-
-                res = cursor.fetchone()["count"]
-
-        if res == 0:
-            rank = self.get_player_rank(pseudo)
-            puuid = self.get_puuid(pseudo)
+        try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO projet_info.players VALUES (%s, %s, %s)",
-                        (puuid, pseudo, rank)
+                        "SELECT COUNT(*) AS count FROM projet_info.players p "
+                        "WHERE p.summonername = %s",
+                        (pseudo,)
                     )
+
+                    res = cursor.fetchone()["count"]
+
+            if res == 0:
+                rank = self.get_player_rank(pseudo)
+                puuid = self.get_puuid(pseudo)
+                with DBConnection().connection as connection:
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            "INSERT INTO projet_info.players VALUES (%s, %s, %s)",
+                            (puuid, pseudo, rank)
+                        )
+        except Exception as e:
+            print(f"Error databse for {pseudo}: {e}")
+            return {}
 
     def get_game_datas(self, matchid):
         """
